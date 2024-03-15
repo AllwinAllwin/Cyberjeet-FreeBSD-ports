@@ -1,0 +1,106 @@
+* Rename Python2 functions to generic Python ones [1]
+* Add support for FreeBSD
+
+[1] Obtained from:
+
+https://gitlab.archlinux.org/archlinux/packaging/packages/qt5-webengine/-/raw/main/qt5-webengine-python3.patch?ref_type=heads
+
+--- src/buildtools/configure.json.orig	2023-11-09 12:28:27 UTC
++++ src/buildtools/configure.json
+@@ -147,7 +147,8 @@
+                     "int id = 0;",
+                     "fre2.Add(s, {}, &id);",
+                     "const RE2 &re2 = fre2.GetRE2(id);"
+-                ]
++                ],
++                "qmake" : "CONFIG += c++1z"
+             },
+             "headers": "re2/filtered_re2.h",
+             "sources": [
+@@ -316,9 +317,9 @@
+             "label": "system ninja",
+             "type": "detectNinja"
+         },
+-        "webengine-python2": {
+-            "label": "python2",
+-            "type": "detectPython2",
++        "webengine-python": {
++            "label": "python",
++            "type": "detectPython",
+             "log": "location"
+         },
+         "webengine-winversion": {
+@@ -385,7 +386,7 @@
+     "features": {
+         "webengine-core-support": {
+             "label": "Support Qt WebEngine Core",
+-            "condition": "(config.linux || config.win32 || config.macos)
++            "condition": "(config.unix || config.win32 || config.macos)
+                          && !config.static
+                          && module.gui
+                          && features.webengine-submodule
+@@ -395,24 +396,24 @@
+                          && features.webengine-gperf
+                          && features.webengine-bison
+                          && features.webengine-flex
+-                         && features.webengine-python2
++                         && features.webengine-python
+                          && features.webengine-nodejs
+                          && (!config.sanitizer || features.webengine-sanitizer)
+-                         && (!config.linux || features.pkg-config)
+-                         && (!config.linux || features.webengine-host-pkg-config)
++                         && (!config.unix || features.pkg-config)
++                         && (!config.unix || features.webengine-host-pkg-config)
+                          && (!config.linux || features.webengine-system-glibc)
+-                         && (!config.linux || features.webengine-system-khr)
+-                         && (!config.linux || features.webengine-system-nss)
+-                         && (!config.linux || features.webengine-system-dbus)
+-                         && (!config.linux || features.webengine-system-fontconfig)
+-                         && (!config.linux || !features.pkg-config || !features.xcb || features.webengine-ozone-x11)
++                         && (!config.unix || features.webengine-system-khr)
++                         && (!config.unix || features.webengine-system-nss)
++                         && (!config.unix || features.webengine-system-dbus)
++                         && (!config.unix || features.webengine-system-fontconfig)
++                         && (!config.unix || !features.pkg-config || !features.xcb || features.webengine-ozone-x11)
+                          && (!config.win32 || features.webengine-win-compiler64)
+                          && (!config.win32 || features.webengine-winversion)",
+             "output": [ "privateFeature" ]
+         },
+         "webengine-qtpdf-support": {
+             "label": "Support Qt Pdf",
+-            "condition": "(config.linux || config.win32 || config.macos || config.ios)
++            "condition": "(config.unix || config.win32 || config.macos || config.ios)
+                          && module.gui
+                          && features.webengine-submodule
+                          && features.webengine-nowhitespace
+@@ -421,10 +422,10 @@
+                          && features.webengine-gperf
+                          && features.webengine-bison
+                          && features.webengine-flex
+-                         && features.webengine-python2
++                         && features.webengine-python
+                          && (!config.sanitizer || features.webengine-sanitizer)
+-                         && (!config.linux || features.pkg-config)
+-                         && (!config.linux || features.webengine-host-pkg-config)
++                         && (!config.unix || features.pkg-config)
++                         && (!config.unix || features.webengine-host-pkg-config)
+                          && (!config.win32 || features.webengine-winversion)",
+             "output": [ "privateFeature" ]
+         },
+@@ -444,12 +445,12 @@
+             "autoDetect": "features.private_tests",
+             "output": [ "privateFeature" ]
+         },
+-        "webengine-python2": {
+-            "label": "python2",
+-            "condition": "tests.webengine-python2",
++        "webengine-python": {
++            "label": "python",
++            "condition": "tests.webengine-python",
+             "output": [
+                 "privateFeature",
+-                { "type": "varAssign", "name": "QMAKE_PYTHON2", "value": "tests.webengine-python2.location" }
++                { "type": "varAssign", "name": "QMAKE_PYTHON", "value": "tests.webengine-python.location" }
+             ]
+         },
+         "webengine-gperf": {

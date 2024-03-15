@@ -1,0 +1,3009 @@
+This file documents some of the problems you may encounter when upgrading
+your ports.  We try our best to minimize these disruptions, but sometimes
+they are unavoidable.
+
+You should get into the habit of checking this file for changes each time
+you update your ports collection, before attempting any port upgrades.
+
+20231229:
+  AFFECTS: users of databases/tarantool
+  AUTHOR: arrowd@FreeBSD.org
+
+  A new major version of the tarantool has been released.
+
+  databases/tarantool renamed to databases/tarantool2.
+
+  2.11 is an LTS version and will be supported for a while.
+
+20231125:
+  AFFECTS: users of lang/php81
+  AUTHOR: bofh@FreeBSD.org
+
+  The default version of PHP has been switched from 8.1 to 8.2.
+
+  If you use binary packages you should make a list of php packages
+  before running 'pkg upgrade':
+
+  # pkg info \*php81\* > ~/installed-php-ports-list
+
+  After the upgrade, check with such list if all your php extensions
+  are still installed, and reinstall them if needed.
+
+  If you use mod_php81 you need to deinstall it and install mod_php82.
+
+20231104:
+  AFFECTS: users of security/libressl
+  AUTHOR: brnrd@FreeBSD.org
+
+  The port has been updated to the latest stable version 3.8 of LibreSSL.
+  The shared library versions of the libraries have been bumped.
+
+  After upgrading, manually update all packages that depend on any of the
+  libraries provided by LibreSSL (libssl, libcrypto and libtls) since the
+  versions of these libraries have changed. Normally, you can obtain the
+  list of dependent software by running the following command:
+
+  # pkg info -r libressl
+
+  Then you should rebuild all ports depending on libressl to avoid dangling
+  shared library dependencies.
+
+20231031:
+  AFFECTS: users of devel/subversion-lts
+  AUTHOR: michaelo@FreeBSD.org
+
+  devel/subversion-lts has been updated from 1.10.x to the latest LTS version,
+  1.14.x. Some changes between these releases may require attention from
+  administrators or users.
+  Refer to https://subversion.apache.org/docs/release-notes/1.14.html#compat-misc for details.
+
+20231028:
+  AFFECTS: users of net-mgmt/nfdump
+
+  nfdump-1.7.x is compatible to nfdump-1.6.18, which means it can
+  read files created with nfdump-1.6.18 or newer. Flow files created
+  with earlier nfdump versions may not contain all flow elements.
+  If you have older files, it is recommended to use nfdump-1.6.17
+  to update the records.
+
+  nfdump 1.7.x provides the same set of programs as 1.6.x and can
+  be used almost as a drop-in replacement. This may change in future
+  and older legacy programs may be removed. You can convert any old
+  files from nfdump-1.6 to nfdump-1.7 format by reading/writing
+  files: ./nfdump -r old-flowfile -y -w new-flowfile
+
+  Please note, that only nfdump may read older flow files. All other
+  programs relay on the new file format.
+
+20231027:
+  AFFECTS: users of net-mgmt/librenms
+  AUTHOR: dvl@FreeBSD.org
+
+  When updating to >= 23.10.0, a broken crontab is fixed. This breakage
+  caused the validation error: Scheduler is not running
+  After updating, If that error does not clear for you, run:
+
+    sudo lnms config:cache
+
+20231027:
+  AFFECTS: users of print/ghostscript9*
+  AUTHOR: michaelo@FreeBSD.org
+
+  The default ghostscript version has been updated from 9 to 10.
+
+  If you compile your own ports you may keep 9 as the default version by
+  adding the following lines to your /etc/make.conf file:
+
+  #
+  # Keep ghostscript 9 as default version
+  #
+  DEFAULT_VERSIONS+=ghostscript=9
+
+  Please note that print/ghostcript9* will be removed in the future since it is
+  not supported by upstream anymore.
+
+20231026:
+  AFFECTS: users of lang/chicken
+  AUTHOR: gahr@FreeBSD.org
+
+  The chicken binaries csc and csi, together with their manual pages, have been
+  renamed to chicken-csc and chicken-csi, to avoid conflicts with lang/mono.
+  This is in line with what several Linux distros do. See PR 274736.
+
+20231023:
+  AFFECTS: users of mail/mailman3
+  AUTHOR: einar@isnic.is
+
+  logging.http section has now been split into two parts, logging.http is for
+  the Mailman internal code and logging.gunicorn is for Gunicorn specifically
+  since they have different logging formats. This should fix spurious errors
+  with KeyError: t that was often confusing for users.
+
+  Python 3.9 is now the minimum supported version of Python.
+
+20231017:
+  AFFECTS: users of lang/perl5*
+  AUTHOR: delphij@FreeBSD.org
+
+  The default Perl version has been switched to Perl 5.36.  If you are using
+  binary packages to upgrade your system, you do not have anything to do, pkg
+  upgrade will do the right thing.
+
+20231014:
+  AFFECTS: users of security/openssl and security/openssl30
+  AUTHOR: brnrd@FreeBSD.org
+
+  The openssl port was renamed to openssl111 and subsequently the
+  openssl30 port was renamed to openssl.
+
+  The shared library version of OpenSSL has been bumped.
+
+  Users of DEFAULT_VERSIONS= ssl=openssl30 must update this to
+  ssl=openssl.
+  Users of DEFAULT_VERSIONS= ssl=openssl should not change this unless
+  they use ports that require the deprecated OpenSSL 1.1.1 version.
+
+  You must rebuild all ports that depend on OpenSSL if you use OpenSSL
+  from ports.
+
+20231011:
+  AFFECTS: users of www/caddy
+  AUTHOR:  adamw@FreeBSD.org
+
+  The default admin endpoint has changed from localhost:2019 to
+  /var/run/caddy/caddy.sock. Using a Unix socket is more secure,
+  allowing it to be secured by filesystem permissions rather than
+  requiring a firewall.
+
+  If you only control caddy from the rc(8) script (service caddy ...),
+  you don't need to do anything. If you access the API yourself, you
+  will want to update your scripts to use the new socket.
+
+  To use the old endpoint, add the following to /etc/rc.conf:
+
+    caddy_admin="localhost:2019"
+
+20231009:
+  AFFECTS: users of net/ntpd-rs
+  AUTHOR: mikael@freebsd.org
+
+  In 1.0.0 the configuration has been completely reworked, please check the
+  documentation for details. Configuration will not automatically migrate.
+
+20231004:
+  AFFECTS: www/gitlab-ce
+  AUTHOR:  mfechner@FreeBSD.org
+
+  Before you upgrade to version 16.4.x or higher, make sure you did the
+  upgrade to 16.3.x!
+
+  The database migration for 16.4.1 can fail due to unexpected name of a foreign key.
+  So it is recommended to have a database backup available in case the solution
+  described in the update manual does not work for you.
+
+  The upgrade manual can be found as usual here:
+  https://gitlab.fechner.net/mfechner/Gitlab-docu/-/blob/master/update/16.3-16.4-freebsd.md
+
+
+20230930:
+  AFFECTS: users of Transmission (net-p2p/transmission@*)
+  AUTHOR:  mondo.debater_0q@icloud.com
+
+  Fixes Bug 274065 by reorganizing the port as a metaport
+  (net-p2p/transmission) and components port (net-p2p/transmission-components).
+  Each component may be installed through the flavors of
+  transmission-componenents (@cli, @daemon, @docs, @gtk, @qt, @utils).
+  Alternatively, one or more component may be installed by running make config
+  on the metaport net-p2p/transmission.
+
+  AFFECTS: users of devel/php-composer2
+  AUTHOR: madpilot@FreeBSD.org
+
+  The composer2 ports has been moved over the old devel/php-composer
+  port, which was still providing the old EOLed version 1 of the
+  software.
+
+  Please use `pkg install php81-composer` (substitute 81 with the
+  PHP version you're using) to properly upgrade.
+
+20230924:
+  AFFECTS: users of XFCE desktop (x11-wm/xfce4)
+  AUTHOR: madpilot@FreeBSD.org
+
+  XFCE 4.18 is incompatible with the latest version of the adwaita
+  icon theme (version 42.0 and newer), which was used as the default one.
+  Due to this the default icon theme has been changed to
+  x11-themes/xfce-icons-elementary.
+
+  Users that have XFCE already installed and are using the adwaita
+  icon theme will notice missing icons. To fix this you can install
+  any other icon theme (like x11-themes/xfce-icons-elementary) and
+  configure XFCE to use that via the "appearance" settings application,
+  under the "icons" tab.
+
+20230919:
+  AFFECTS: users of net-p2p/transmission
+  AUTHOR:  mondo.debater_0q@icloud.com
+
+  The 4.0 port haphazardly consolidated prior slave ports into flavors of a single port.
+  The flavors have now been revised to better match releases prior to 4.0.
+  The -full flavor included in the 4.0 port has been replaced with -default, which
+  restores the compile-time options of prior release's metaport. Other flavors allow
+  for more piecemeal installs. The prior -web slave port can be installed through the
+  -default flavor or the -daemon flavor.
+
+  See Bug 273841 for more details.
+
+20230915:
+  AFFECTS: users of print/ghostscript10
+  AUTHOR: michael.osipov@siemens.com
+
+  The port flavors have been replaced with a default port option of X11.
+  The flavors approach creates conflicting dependencies with other ports which
+  cannot be solved this time with the ports framework.
+
+  See PRs 270989 and 272541 for details.
+
+20230910:
+  AFFECTS: users of dns/powerdns
+  AUTHOR: tremere@cainites.net
+
+  In Authoritative Server 4.8, the LMDB backend gains a new Lightning
+  Stream-compatible schema, which requires a data migration (this is
+  automatic, and there is no migration back to the old schema). LMDB
+  backend users should pay extra attention to the Upgrade Notes
+  (https://doc.powerdns.com/authoritative/upgrading.html).
+
+20230910:
+  AFFECTS: users of net-mgmt/netbox
+  AUTHOR: kai@FreeBSD.org
+
+  1. Please make sure that the PostgreSQL server for the NetBox instance is
+     running version 12 or higher.  This is because Django 4.2 requires
+     PostgreSQL 12 as a minimum.
+
+  2. Please also check the pkg-message and the changelogs for further info.
+
+20230908:
+  AFFECTS: users of databases/postgresql* and other software using PostgreSQL to run
+  AUTHOR: kbowling@FreeBSD.org
+
+  The default version of PostgreSQL has been switched from 13 to 15.
+  The upgrade procedure can use up twice the space the databases
+  currently needs. If you have a big amount of stored data take a
+  closer look at the manpage of pg_upgrade for avoidance and/or
+  speedup of the upgrade.
+
+  The upgrade instructions consider a basic usage and do not match
+  complex scenarios like replication, sharding, or similar.
+
+  Upgrade instructions:
+
+  First stop your PostgreSQL, create PostgreSQL-binaries and backup your data.
+  If you have another Version of PostgreSQL installed, for example 13, your
+  files are named according to this.
+
+  # service postgresql stop
+  # pkg create postgresql13-server postgresql13-contrib
+  # mkdir /tmp/pg-upgrade
+  # tar xf postgresql13-server-13.12.pkg -C /tmp/pg-upgrade
+  # tar xf postgresql13-contrib-13.12.pkg -C /tmp/pg-upgrade
+  # pkg delete -f databases/postgresql13-server databases/postgresql13-contrib databases/postgresql13-client
+
+  Now update PostgreSQL:
+
+    pkg user:
+    # pkg install databases/postgresql15-server databases/postgresql15-contrib
+    # pkg upgrade
+
+    Portmaster users:
+    # portmaster databases/postgresql15-server databases/postgresql15-contrib
+    # portmaster -a
+
+    Portupgrade users:
+    # portinstall databases/postgresql15-server databases/postgresql15-contrib
+    # portupgrade -a
+
+  After installing the new PostgreSQL version you need to convert
+  all your databases to new version:
+
+  # su -l postgres -c "/usr/local/bin/initdb --encoding=utf-8 --lc-collate=C -D /var/db/postgres/data15 -U postgres"
+  # su -l postgres -c "pg_upgrade -b /tmp/pg-upgrade/usr/local/bin/ -d /var/db/postgres/data13/ -B /usr/local/bin/ -D /var/db/postgres/data15/ -U postgres "
+
+  Now the migration is finished. You can start PostgreSQL again with:
+
+  # service postgresql start
+
+  ATTENTION:
+  1) The default user changed from "pgsql" to "postgres" in 11. The migration steps above now assume
+     the "postgres" database user and FreeBSD user.
+  2) See the updating entry 20190829 if you are updating from a release prior to 11.
+  3) If you use non-default initdb options, you have to adjust the initdb-command accordingly
+
+20230906:
+  AUTHOR: jrm@FreeBSD.org
+  AFFECTS: users of sysutils/devcpu-data*
+
+  The CPU microcode ports have been reorganized.  The new ports are:
+  sysutils/cpu-microcode, sysutils/cpu-microcode-amd,
+  sysutils/cpu-microcode-intel, and cpu-microcode-rc.
+
+  To install all CPU microcode packages:
+
+     pkg install cpu-microcode
+
+  To install only packages for a specific CPU vendor:
+
+     pkg install cpu-microcode-amd
+
+     or
+
+     pkg install cpu-microcode-intel
+
+  To give users time to adjust to these changes, sysutils/devcpu-data will
+  remain in the tree until the end of 2023.  The port has been converted to a
+  metaport and now provides the same functionality as sysutils/cpu-microcode.
+
+  Refer to the commit log in bc7829212d153aeff69b439d08e2e3001ef88ba3 for an
+  explanation as to why these changes were made.
+
+20230904:
+  AUTHOR: netchild@FreeBSD.org
+  AFFECTS: users of misc/openhab
+
+  The rc.d script of 4.0.2 had an error which didn't take the user to
+  run openhab into account. After installing the update and stopping
+  openhab run (for the default settings)
+    chown -R openhab:openhab /var/db/openhab/userdata /var/log/openhab
+  If you use other directories for the userdata and logs, you need to
+  adapt accordingly.
+
+20230822:
+  AUTHOR: arrowd@FreeBSD.org
+  AFFECTS: users of sysutils/polkit together with sysutils/consolekit2
+
+  ConsoleKit2 has grown some logind1 compatibility which resulted in breaking
+  changes in its API. One of its consumers, Polkit, is patched to handle it,
+  so make sure to update both ports simultaneously.
+
+20230822:
+  AUTHOR: leres@FreeBSD.org
+  AFFECTS: users of security/zeek
+
+  Zeek has been upgraded to 6.0.0 and the NETMAP option was removed;
+  it was too difficult to build it without zeek being installed in
+  %%PREFIX%%.
+
+  The consensus was that this was a rarely used feature, please
+  reach out to me if need this (I've done some work on a new
+  security/zeek-netmap port that is probably the right way forward).
+
+  When I upgraded zeek on my systems I found some cruft left over
+  from previous versions. The way I recommend upgrading from 5.0.9 to
+  6.0.0 is:
+
+      service zeek stop
+      pkg delete -fy zeek py311-zkg
+      [clean up leftover files in /usr/local/lib/zeek]
+      pkg install -y zeek
+      service zeek deploy
+
+20230817:
+  AFFECTS: users of databases/redis
+  AUTHOR: yasu@FreeBSD.org
+
+  The databases/redis port has been updated to 7.2. Users wanting to
+  stay on 7.0 can replace databases/redis with databases/redis70 with
+  one of the following commands.
+
+  If you use pkg with binary packages:
+    # pkg set -o databases/redis:databases/redis70
+    # pkg upgrade
+  If you use portmaster:
+    # portmaster -o databases/redis70 databases/redis
+  If you use portupgrade:
+    # portupgrade -o databases/redis70 databases/redis
+
+20230814:
+  AFFECTS: usrs of www/kdsoap
+  AUTHOR: kde@FreeBSD.org
+
+  The port www/kdsoap has been flavorized to support both Qt5 and Qt6.
+  For symmetry, the Qt5 package has been renamed to kdsoap-qt5.
+
+20230811:
+  AFFECTS: users of www/p5-AnyEvent-WebSocket-Client
+  AUTHOR: rodrigo@FreeBSD.org
+
+  The update to AnyEvent-WebSocket-Client 0.55 introduce a change in behavior:
+  close() default return code is now 1000 instead of 1005
+
+20230730:
+  AFFECTS: users of lang/perl5*
+  AUTHOR: delphij@FreeBSD.org
+
+  The default Perl version has been switched to Perl 5.34.  If you are using
+  binary packages to upgrade your system, you do not have anything to do, pkg
+  upgrade will do the right thing.
+
+20230726:
+  AFFECTS: users of misc/openhab
+  AUTHOR: netchild@FreeBSD.org
+
+  The update to openhab 4.0.0 may require changes to the running 3.x setup.
+  Read the release notes at
+    https://github.com/openhab/openhab-distro/releases/tag/4.0.0
+  and the blog entry at
+    https://www.openhab.org/blog/2023-07-23-openhab-4-0-release.html
+  for manual changes which are required before updating the port.
+
+  After the update the pkg-message provides some more info about manual
+  changes which are required to perform before the first start of 4.0.0.
+
+  Note, this includes a switch from java 11 to java 17. You can deinstall
+  openjdk11 afterwards, if it is not needed for something else.
+
+20230723:
+  AFFECTS: users of security/py-cryptography
+  AUTHOR: tcberner@FreeBSD.org
+
+  Modern py-cryptography uses rust. In order to still support the Tier-2
+  architectures without rust support, a new default-version was added:
+     PYCRYPTOGRAPHY
+  it allows for the values 'rust' and 'legacy'.
+  The default is 'rust' on all platforms supporting this.
+  Note: users that are relying on the 'legacy' version will also take care
+  of using a non-base OpenSSL in the future.
+
+20230620:
+  AFFECTS: users of lang/elixir-devel
+  AUTHOR: dch@FreeBSD.org
+
+	Note that Elixir now *requires* OTP25+ or better at runtime.
+	For the -devel flavour you are still free to choose OTP25 or
+	OTP26, but the default OTP24 from lang/erlang will *not* work.
+
+20230618:
+  AFFECTS: users of devel/soft-serve
+  AUTHOR: ashish@FreeBSD.org
+
+  soft-serve no longer uses config repository for configuration. To migrate
+  configuration from 0.4.x to 0.5.x, please review the upgrade documentation at:
+
+      https://github.com/charmbracelet/soft-serve/releases/tag/v0.5.0
+
+  The migration process has been incorporated in rc.d script's migrate command,
+  and can be performed using following instructions:
+
+  0. Please make sure to backup repository data
+
+  1. Stop existing process:
+
+      # /usr/local/etc/rc.d/soft-serve stop
+
+  2. Run the rc.d script to migrate, e.g.
+
+      # /usr/local/etc/rc.d/soft-serve migrate
+      INFO Setting SSH listen address...
+      INFO Copying SSH host key...
+      INFO Reading config repository...
+      INFO Setting server settings...
+      INFO Copying repos...
+      INFO   Copying repo ports
+      INFO   Copying readme from "config" to ".soft-serve"
+      INFO Setting repos metadata & collabs...
+      INFO Creating users & collabs...
+      INFO Creating user "ashish"
+      INFO Writing config...
+      INFO Done!
+
+  Another variable is introduced in rc.d script, soft_serve_data_path,
+  indicating the path to data directory used by soft-serve.
+
+20230618:
+  AFFECTS: textproc/apache-solr*
+  AUTHOR: mfechner@FreeBSD.org
+
+  Apache solr is upgraded to version 9.
+  Data migration is required, examples for dovecot data can be found here:
+  https://dovecot.org/pipermail/dovecot/2022-May/124701.html
+  https://dovecot.org/pipermail/dovecot/2022-May/124711.html
+
+  If you like to stay on version8:
+  # pkg delete apache-solr
+  # pkg install apache-solr8
+
+20230609:
+  AFFECTS: users of security/sequoia
+  AUTHOR: vishwin@FreeBSD.org
+
+  sq has been split to security/sequoia-sq; security/sequoia becomes
+  a meta-port, where security/sequoia-sq is currently the only
+  dependency. As other programs are individually ported over, they
+  will become OPTIONS in the meta-port.
+
+  Per upstream, FFI is deprecated in favour of point solutions.
+
+20230602:
+  AFFECTS: users of net-mgmt/netbox
+  AUTHOR: kai@FreeBSD.org
+
+  1. If the plugin security/py-netbox-secretstore is used, which is no
+     longer maintained by upstream, the following steps must be done before
+     upgrading to NetBox 3.5:
+
+     * Migrate from security/py-netbox-secretstore (= 1.4.2_2) to
+       security/py-netbox-secrets (= 1.7.6) with a NetBox 3.4.x instance.
+
+       It is very important that the versions of py-netbox-secretstore and
+       py-netbox-secrets match as specified otherwise the migration will not
+       be successful.
+
+       The reason for this is that py-netbox-secrets 1.8.x is not backwards
+       compatible with Netbox 3.4.  For further details please see the
+       updating instructions of py-netbox-secretstore or the UPDATING entry
+       of 2023-05-11.
+
+  2. Please also check the pkg-message and the changelogs for further info.
+
+20230531:
+  AFFECTS: users of net-mgmt/netdisco
+  AUTHOR: dgeo@centrale-marseille.fr
+
+  The netdisco user now needs a HOME and a shell.
+  For existing installs you will need to set
+  HOME to /usr/local/etc/netdisco and shell to /bin/sh.
+
+  For example in one shell line:
+  pw user mod netdisco -d /usr/local/etc/netdisco -s /bin/sh
+
+20230526:
+  AFFECTS: users of mail/exim
+  AUTHOR: pi@FreeBSD.org
+
+  The port changes from USE_DB to USE_NDBM. Any existing configuration like
+  ${lookup{$needle}dbm{haystack.db}}
+  will need to change to
+  ${lookup{$needle}dbm{haystack}}.
+
+  Please also rename your old DBM files while the exim daemon is stopped:
+  find /var/spool/exim/db/* -not -name \*.lockfile -exec mv -i {} {}.db \;
+
+20230513:
+  AFFECTS: users of www/tt-rss
+  AUTHOR: dereks@lifeofadishwasher.com
+
+  www/tt-rss now expects the user to install the database drivers by hand
+  allowing the port to be database independent however it would be best if you
+  mark the php driver packages as a non-automatic package such that
+  pkg-autoremove doesn't uninstall them.
+
+  Change 80 to your corresponding php version (80, 81, 82)
+
+  mysql: pkg set -yA 0 php80-mysqli php80-pdo_mysql;
+  pgsql: pkg set -yA 0 php80-pgsql php80-pdo_pgsql;
+
+20230511:
+  AFFECTS: users of net-mgmt/py-netbox-secretstore
+  AUTHOR: kai@FreeBSD.org
+
+  Upstream no longer maintains py-netbox-secretstore which it is not
+  compatible with NetBox 3.5 or newer.  To ensure compatibility with newer
+  releases of NetBox, the py-netbox-secrets plugin should be used instead.
+
+  To migrate from security/py-netbox-secretstore to
+  security/py-netbox-secrets please do following steps:
+
+   1. Make a backup.
+
+   2. Install security/py-netbox-secrets
+
+   3. Enable both plugins by updating the following line in the netbox
+      configuration (e.g. /usr/local/share/netbox/netbox/configuration.py):
+
+      PLUGINS = ['netbox_secretstore', 'netbox_secrets']
+
+   4. Run NetBox migrations:
+
+      # cd /usr/local/share/netbox
+      # python3.9 manage.py migrate
+
+   5. Re-adjust the indices for the netbox-secrets plugin:
+
+      # python3.9 manage.py sqlsequencereset netbox_secrets > output.sql
+
+   6. Run the output of the previous command in the database, e.g.:
+
+      # psql -d NETBOXDB < output.sql
+
+   7. You can now remove netbox-secretstore from the application by removing
+      it from the PLUGINS line in the netbox configuration:
+
+      PLUGINS = ['netbox_secrets']
+
+   8. Collect static files of the netbox-secrets plugin:
+
+      # python3.9 manage.py collectstatic --no-input
+
+   9. Restart WSGI/httpd environment (supervisord/apache/nginx/etc.).
+
+  10. You may have clean up your database of the old tables manually, e.g.:
+
+      DROP TABLE netbox_secretstore_secret;
+      DROP TABLE netbox_secretstore_secretrole;
+      DROP TABLE netbox_secretstore_sessionkey;
+      DROP TABLE netbox_secretstore_userkey;
+
+  11. Uninstall security/py-netbox-secretstore.
+
+20230505:
+  AFFECTS: users of mail/mutt
+  AUTHOR: dereks@lifeofadishwasher.com
+
+  The patches included in the mail/mutt port will be removed in approximately a
+  month making the port more inline with upstream. If you require any of these
+  features most are available in mail/neomutt or it's possible to use
+  EXTRA_PATCH_TREE to patch a port when building locally.
+
+20230504:
+  AFFECTS: users of sysutils/py-mqttwarn
+  AUTHOR: dvl@FreeBSD.org
+
+  The redis option REISPUB has been renamed to REDISPUB
+  You should update any make.conf setting etc which refer to this.
+  e.g. change sysutils_py-mqttwarn_REISPUB to sysutils_py-mqttwarn_REDISPUB
+
+20230416:
+  AFFECTS: users of databases/mongodb50, databases/mongodb44 and databases/mongodb60
+  AUTHOR: ronald@FreeBSD.org
+
+  MongoDB removed the settings 'fork' and 'pidFilePath' from the default
+  etc/mongodb.conf file.
+  This does not affect mongod started by etc/rc.d/mongod as the settings are
+  passed as arguments. Please verify custom uses of mongod.
+
+20230414:
+  AFFECTS: users of www/gitea
+  AUTHOR: fernape@FreeBSD.org
+
+  Gitea 1.19.1 contains a breaking change.
+  actions unit has ben renamed to to repo.actions.
+
+20230407:
+  AFFECTS: users of devel/sonarqube-community
+  AUTHOR: netchild@FreeBSD.org
+
+  You need to make sure to update missing and changed values in
+     PREFIX/libexec/sonarqube/conf/sonar.properties
+  from
+     PREFIX/libexec/sonarqube/conf/sonar.properties.sample
+
+20230318:
+  AFFECTS: users of security/libressl
+  AUTHOR: brnrd@FreeBSD.org
+
+  The port has been updated to the latest stable version 3.6 of LibreSSL.
+  The shared library versions of the libraries have been bumped.
+
+  After upgrading, manually update all packages that depend on any of the
+  libraries provided by LibreSSL (libssl, libcrypto and libtls) since the
+  versions of these libraries have changed. Normally, you can obtain the
+  list of dependent software by running the following command:
+
+  # pkg info -r libressl
+
+  Then you should rebuild all ports depending on libressl to avoid dangling
+  shared library dependencies.
+
+20230315:
+  AFFECTS: users of lang/ruby30
+  AUTHOR: yasu@FreeBSD.org
+
+  The default ruby version has been updated from 3.0 to 3.1.
+
+  If you compile your own ports you may keep 3.0 as the default version by
+  adding the following lines to your /etc/make.conf file:
+
+  #
+  # Keep ruby 3.0 as default version
+  #
+  DEFAULT_VERSIONS+=ruby=3.0
+
+  If you wish to update to the new default version, you need to first stop any
+  software that uses ruby. Then, you will need to follow these steps, depending
+  upon how you manage your system.
+
+  If you use pkg, simply upgrade:
+  # pkg upgrade
+
+  If you do not use pkg, please check entry 20190420.
+  The description there should also work for this version.
+
+20230314:
+  AFFECTS: users of security/openssl-devel
+  AUTHOR: brnrd@FreeBSD.org
+
+  Users using DEFAULT_VERSIONS=ssl=openssl-devel must update their
+  configuration to DEFAULT_VERSIONS=ssl=openssl30 or openssl31.
+
+20230313:
+  AFFECTS: users of databases/sqlite3
+  AUTHOR: fuz@FreeBSD.org
+
+  Due to various ports not being prepared for this change (see 20230227
+  entry), the DQS option of databases/sqlite3 has been reenabled as a
+  stop gap measure.  It is scheduled to be disabled again for good no
+  earlier than 20240101, giving downstream software authors more time
+  to fix their queries.
+
+  See also: https://sqlite.org/quirks.html#dblquote
+
+20230311:
+  AFFECTS: users of net/dshell
+  AUTHOR: nobutaka@FreeBSD.org
+
+  net/dshell now depends on net/py-pcapy-ng instead of net/py-pcapy.
+  Because net/py-pcapy-ng conflicts with net/py-pcapy, please uninstall
+  py39-pcapy with the following command before upgrading:
+  # pkg delete -f py39-pcapy
+
+20230310:
+  AFFECTS: users of net-mgmt/unifi7
+  AUTHOR: otis@FreeBSD.org
+
+  The mongodb dependency has been changed from 36 to 44, as MongoDB 3.6
+  is long out out support and end of life.
+
+  The upgrade path should be as following:
+
+  1. Take a backup from within the unifi7 application PRIOR to
+     updating!
+
+  2. Stop the unifi7 service (if running)
+
+  3. Copy the "backup" directory from LOCALBASE/share/java/unifi/data
+     to a safe location. Also copy keystore and system.properties if
+     you have made any modifications to those files
+
+  4. Remove files and directories under LOCALBASE/share/java/unifi/data
+
+  5. Upgrade the package
+
+  6. Copy the "backup" directory from a safe location back to
+     LOCALBASE/share/java/unifi/data
+
+  7. Start the service
+
+  8. Restore the configuration from backup
+
+  As an optional step, review system.properties and keystore to merge any
+  manual modifications you have made (this has to be done with the application
+  stopped)
+
+20230310:
+  AFFECTS: user of benchmarks/ddosify
+  AUTHOR: fernape@FreeBSD.org
+
+  keep-alive is removed from config file. In default mode, the engine will use
+  keep-alive for all requests. If you want to disable keep-alive for a step, you
+  can add Connection: close header to the step.
+
+20230306:
+  AFFECTS: users of www/qt5-webengine
+  AUTHOR: kai@FreeBSD.org
+
+  Users that upgrade www/qt5-webengine without using pkg/poudriere might
+  experience failures due to conflicts with the installed version of 5.15.2.
+
+  In that case, pkg delete -f the qt5-webengine package before building
+  the updated version.
+
+20230304:
+  AFFECTS: users of accessibility/atk and accessibilty/at-spi2-atk
+  AUTHOR: tcberner@FreeBSD.org
+
+  The packages accessibility/atk and accessibility/at-spi2-atk have been
+  integrated upstream into at-spi2-core.
+
+  Users of these packages can manually remove them prior to updating
+  accessibility/at-spi2-core using
+
+     pkg delete -f atk at-spi2-atk
+
+  if the pkg update process fails due to conflicting files.
+
+20230227:
+  AFFECTS: users of databases/sqlite3
+  AUTHOR: fuz@FreeBSD.org
+
+  Option DQS is now disabled by default.  This option controls the "double
+  quoted string literals are accepted" quirk, permitting the use of double
+  quotes around string literals if enabled.  Users who rely on this quirk
+  need to manually build databases/sqlite3 with the DQS option enabled.
+
+  See also: https://sqlite.org/quirks.html#dblquote
+
+20230227:
+  AFFECTS: users of mail/py-spf-engine
+  AUTHOR: yasu@FreeBSD.org
+
+  Default configuration file path of pyspf-milter has changed. Since
+  it looks for ${PREFIX}/etc/etc/pyspf-milter/pyspf-milter.conf now,
+  you should edit the file if you run pyspf-milter. Alternatively you
+  can specify other configuration file path by setting
+  pyspf_milter_conffile variable in /etc/rc.conf.
+
+20230222:
+  AFFECTS: users of net-mgmt/netbox
+  AUTHOR: kai@FreeBSD.org
+
+  1. Please make sure that the PostgreSQL server for the NetBox instance is
+     running version 11 or higher.  This is because PostgreSQL 10 is
+     End-of-Life since November 2022 and Django 4.1 requires PostgreSQL 11
+     as a minimum.
+
+  2. Please also check the pkg-message and the changelogs for further info.
+
+20230218:
+  AFFECTS: users of databases/mysql57-(server|client)
+  AUTHOR: joneum@FreeBSD.org
+
+  The default MySQL version has been updated from 5.7 to 8.0.
+
+  If you compile your own ports you may keep 5.7 as the default version by
+  adding the following lines to your /etc/make.conf file:
+
+  #
+  # Keep MySQL 5.7 as default version
+  #
+  DEFAULT_VERSIONS+=mysql=5.7
+
+  If you wish to update to the new default version, you need to first stop any
+  running server instance. Then, you will need to follow these steps, depending
+  on installed packages.
+
+  # pkg set -o databases/mysql57-client:databases/mysql80-client
+  # pkg set -o databases/mysql57-server:databases/mysql80-server
+  # pkg upgrade
+
+20230213:
+  Affects: users of sysutils/nut*
+  AUTHOR: cy@FreeBSD.org
+
+  The nut file ownership fixups due to the UID/GID change from uucp/uucp
+  to nut/nut may not be desireable for all users. Some users with custom
+  file ownership may wish ownership to remain untouched. This revision
+  to the nut family of ports/packages allows users to optionally disable
+  automatic fixup of nut file ownership.
+
+20230213:
+  AFFECTS: users of security/logcheck
+  AUTHOR: yasu@FreeBSD.org
+
+  Since 1.4.1 ${PREFIX}/etc/logcheck/logcheck.logfiles is empty and
+  files to be checked by logcheck are specified in
+  ${PREFIX}/etc/logcheck/logcheck.logfiles.d/syslog.logfiles. So if
+  you previously edited the former, then you should edit the latter
+  now.
+
+20230210:
+  AFFECTS: users of mail/fetchmail
+  AUTHOR: fernape@FreeBSD.org
+
+  Fetchmail now warns about OpenSSL before 1.1.1s or 3.0.7, and rejects wolfSSL
+  older than 5.5.1.
+
+20230209:
+  AFFECTS: users of audio/jack
+  AUTHOR: fernape@FreeBSD.org
+
+  audio/jack 1.9.22 fixes an issue with latency correction on FreeBSD.
+  Latency correction parameters have to be measured again after update.
+
+20230130:
+  AFFECTS: users of USES=nodejs, www/node*, www/npm* and www/yarn*
+  AUTHOR: sunpoet@FreeBSD.org
+
+  The current USES=nodejs has the following issues:
+  - www/node is not the default version while www/node16 is.
+  - It also means inconsistent naming of node ports.
+  - www/npm duplicates with www/npm-node16.
+  - www/yarn duplicates with www/yarn-node16.
+
+  The notable changes are introduced to fix the above issues:
+  - Rewrite Mk/Uses/nodejs.mk.
+  - Add new LTS version of nodejs (www/node18).
+  - Add new current version of nodejs (www/node19).
+  - Change default nodejs version from 16 to 18 (latest LTS),
+  - Use consistent naming for all supported node versions.
+  - Convert www/node, www/npm and www/yarn to meta ports.
+
+  After these changes:
+  - All supported node versions are named as node{14,16,18,19}.
+  - www/node is a meta port which depends on the default version
+    (e.g. www/node18)
+  - www/npm is a meta port which depends on the default version
+    (e.g. www/npm-node18)
+  - www/yarn is a meta port which depends on the default version
+    (e.g. www/yarn-node18)
+
+20230129:
+  AFFECTS: users of benchmarks/ddosify
+  AUTHOR: fernape@freebsd.org
+
+  In 0.13.0 some configuration keys have been renamed for consistency. Have a
+  look at https://github.com/ddosify/ddosify/releases/tag/v0.13.0 for details.
+
+20230127:
+  AFFECTS: users of security/openvpn
+  AUTHOR: mandree@freebsd.org
+
+  OpenVPN has been updated to the new upstream release v2.6.0, which
+  is quite compatible with v2.5 versions.
+
+  A copy of the latest v2.5.8 port is being kept as security/openvpn25 (or
+  openvpn25 package) until end of March 2023.
+
+20230116:
+  AFFECTS: users of sysutils/nut and sysutils/nut-devel
+  AUTHOR: cy@freebsd.org
+
+  As of PR/268960 Network UPS Tools will now run under its own UID and GID
+  instead of uucp. Users who wish to continue using the uucp user and
+  group may add NUT_USER=uucp and NUT_GROUP=uucp to their make.conf.
+
+  After upgrading sysutils/nut or sysutils/nut-devel with this patch,
+  restart devd. Then restart nut. This will fix up the permissions of
+  UPS USB devices and allow nut to start normally.
+
+20230111:
+  AFFECTS: users of sysutils/graylog
+  AUTHOR: dch@freebsd.org
+
+  Graylog 5.x and higher effectively constrains ElasticSearch
+  dependencies, and in most cases will force a migration to
+  OpenSearch 2.x, now available in ports. Plan accordingly.
+
+20230104:
+  AFFECTS: users of mail/spamassassin
+  AUTHOR: cy@freebsd.org
+
+  As of spamassassin 4.0.0 (3fdfceb36029) the deprecated HashCash plug-in
+  was finally removed. Users using the HashCash plug-in will need to
+  remove references to it.
+
+20221226:
+  AFFECTS: users of sysutils/zrepl
+  AUTHOR: driesm@FreeBSD.org
+
+  The Prometheus metric zrepl_version_daemon has been converted to the
+  zrepl_start_time metric. The metric still reports the zrepl verison in a
+  label. But the metric value is now the Unix timestamp at the time the
+  daemon was started. The Grafana dashboard in dist/grafana has been
+  updated.
+
+  The RPC protocol version has also been bumped; all zrepl daemons in a
+  setup must be updated and restarted before replication can resume.
+
+20221220:
+  AFFECTS: users of net-mgmt/unbound_exporter
+  AUTHOR: thomas@beingboiled.info
+
+  The config defaults for the log file and certificates have been changed.
+  See /usr/local/etc/rc.d/unbound_exporter for possible options and adjust
+  your rc.conf accordingly.
+
+20221215:
+  AFFECTS: users of security/clamav
+  AUTHOR: yasu@FreeBSD.org
+
+  Many users report that after updating ClamAV to 1.0.0 clamd and
+  freshclam fails to start with integrity check error of
+  databases. According to the result of investigation it happens with
+  following conditions.
+
+  1. ClamAV is built on non-cleanroom environment (that is, neither
+     FreeBSD official ClamAV package is used nor the package is built
+     by user with poudriere).
+  2. math/tomsfastmath is installed in the system that ClamAV is
+     built.
+
+  So if the errror happens on you system, uninstall TomsFastMath first
+  and then rebuild and reinstall ClamAV. The problem should disappear.
+
+20221128:
+  AFFECTS: devel/py-proxmoxer
+  AUTHOR: einar@isnic.is
+
+  AuthenticationError Moved
+
+  proxmoxer.backends.https.AuthenticationError was moved to
+  proxmoxer.AuthenticationError (the class itself is the same).
+  Any imports or references to proxmoxer.backends.https.AuthenticationError
+  should be changed to proxmoxer.AuthenticationError.
+
+  ProxmoxResourceBase Removed
+
+  While this should be a fully internal change, the ProxmoxResourceBase
+  class was removed. Use ProxmoxResource instead.
+
+  Removed ProxmoxHTTPTicketAuth
+
+  The auth_token and csrf_token arguments are no longer supported. If an
+  existing (still valid) token needs to be used, you can pass the token
+  as password and proxmoxer will attempt to renew the ticket and retrieve
+  a new token and CSRF token.
+
+20221126:
+  AFFECTS: textproc/kibana8
+  AUTHOR: otis@FreeBSD.org
+
+  kibana8 now installs kibana-specific utilities into LOCALBASE/bin as symbolic
+  links.
+
+  Please check whether it will overwrite your local files with names same as
+  these utilities and if so, please rename them or move out of the way in a
+  different manner.
+
+20221126:
+  AFFECTS: textproc/elasticsearch8
+  AUTHOR: otis@FreeBSD.org
+
+  elasticsearch8 now installs elasticsearch-specific utilities into
+  LOCALBASE/bin as symbolic links (i.e. elasticsearch-cli and similar).
+
+  Please check whether it will overwrite your local files with names same
+  as these utilities and if so, please rename them or move out of the way
+  in a different manner.
+
+20221126:
+  AFFECTS: users of lang/php80
+  AUTHOR: bofh@FreeBSD.org
+
+  The default version of PHP has been switched from 8.0 to 8.1.
+
+  If you use binary packages you should make a list of php packages
+  before running 'pkg upgrade':
+
+  # pkg info \*php80\* > ~/installed-php-ports-list
+
+  After the upgrade, check with such list if all your php extensions
+  are still installed, and reinstall them if needed.
+
+  If you use mod_php80 you need to deinstall it and install mod_php81.
+
+20221123:
+  AFFECTS: x11-wm/jwm
+  AUTHOR: fernape@FreeBSD.org
+
+  jwm 2.4 introduces changes in the configuration.  To convert an existing v2.3
+  configuration file using xsltproc, run:
+
+  cp ~/.jwmrc ~/.jwmrc.old
+  xsltproc jwm-2.4.xslt ~/.jwmrc.old > ~/.jwmrc
+
+  If you have multiple configuration files, it may be necessary to apply the
+  XSLT to some or all of them depending on what configuration options are stored
+  in the file.
+
+20221017:
+  AFFECTS: archivers/star
+  AUTHOR: fernape@FreeBSD.org
+
+  With the update of devel/schilybase to 2022-10-16 a new port archivers/tartest
+  has been splitted off from archivers/star.
+
+20221016:
+  AFFECTS: textproc/apache-solr
+  AUTHOR: mfechner@FreeBSD.org
+
+  Apache solr version 9 is released and made available as extra port
+  textproc/apache-solr9.
+  Version 9 cannot start directly with data from version 8. Additional steps
+  for data migration is required.
+  If you like to use the new version, deinstall the old version and install
+  the new version:
+  # pkg delete apache-solr
+  # pkg install apache-solr9
+  After this you need to migrate data and migration, for this check the solr
+  documentation.
+
+20221015:
+  AFFECTS: users of gstreamer1-* when upgrading via port builds on the host
+  AUTHOR: riggs@FreeBSD.org
+
+  The update of the gstreamer1-* ports to 1.20.3 requires a clean install of
+  gstreamer1-* ports. In particular, when trying to update ports in-place using
+  portupgrade or portmaster, the builds are likely to fail due to dependency
+  mismatches. If this is your preferred update path, you need to deinstall
+  (pkg delete -f) gstreamer1 and the plugins before reinstalling them from
+  the ports tree.
+  Note that pkg upgrade will do the right thing: If you use official FreeBSD
+  packages or build your own set of packages using poudriere, nothing special
+  is needed.
+
+20221012:
+  AFFECTS: devel/websvn
+  AUTHOR: michael.osipov@siemens.com
+
+  WebSVN 2.8.0 includes full PHP 8.x support which requires a change from PEAR
+  to Composer 2. You must manually install dependencies through it, the ports
+  system will not handle it anymore for you since */horde* (PR 266552) has been
+  marked as incompatible with PHP 8.x for the time being. See pkg-message for
+  detailed instructions.
+
+20221011:
+  AFFECTS: users of security/acme.sh
+  AUTHOR: dvl@FreeBSD.org
+
+  This update may break your install if you were using a symlink to
+  %%EXAMPLESDIR%%/acme.sh.conf - that file is no longer installed. Instead,
+  a log rotation configuration is now installed to etc/cron.d/acme.sh.sample
+  you should modify etc/cron.d/acme.sh to needs.
+
+  The port now installs a log rotation file to etc/newsyslog.d/acme.sh.sample
+  and you you should update etc/newsyslog.d/acme.sh to suit your needs.
+  This file has long been part of the port, but was never installed.
+
+  Neither the log rotation nor the crontab are active until you remove the
+  comments.
+
+20221002:
+  AFFECTS: users of shells/bash
+  AUTHOR: ehaupt@FreeBSD.org
+
+  Bash has been updated to version 5.2. In previous versions, the default port
+  option-set used to link against libreadline from ports. However, the current
+  version of devel/readline is too old for bash 5.2.
+
+  For now, the default option has been switched to use the bundled version of
+  libreadline and the other option is marked broken. Once devel/readline is
+  updated this can be reverted.
+
+  If you're updating bash from source and you've previously explicitly set to
+  use use PORTS_READLINE, you'll have to disable the PORTS_READLINE option
+  before updating:
+
+  # cd /usr/ports/shells/bash
+  # make config
+
+   or flush it entirely:
+
+  # cd /usr/ports/shells/bash
+  # make rmconfig
+
+20220929:
+  AFFECTS: users of graphics/bmeps
+  AUTHOR: takefu@airport.fm
+
+  The executable name has been changed from this edition from bmpp to bitmap2pp
+
+20220925:
+  AFFECTS: users of security/libressl
+  AUTHOR: brnrd@FreeBSD.org
+
+  The port has been updated to the latest stable version 3.5 of LibreSSL.
+  The shared library versions of the libraries have been bumped.
+
+  After upgrading, manually update all packages that depend on any of the
+  libraries provided by LibreSSL (libssl, libcrypto and libtls) since the
+  versions of these libraries have changed. Normally, you can obtain the
+  list of dependent software by running the following command:
+
+  # pkg info -r libressl
+
+  Then you should rebuild all ports depending on libressl to avoid dangling
+  shared library dependencies.
+
+20220919:
+  AFFECTS: users of audio/strawberry
+  AUTHOR: mandree@FreeBSD.org
+
+  strawberry now uses FLAVORs based on the qt version, offering -qt5 and
+  -qt6, with -qt5 the default.
+
+  You may need to explicitly install either of the new flavors.
+
+20220919:
+  AFFECTS: users of sysutils/schilyutils
+  AUTHOR: fuz@fuz.su
+
+  Schilyutils has been split up into two ports. If you want the bosh shell,
+  the new port is shells/bosh, which can be installed with:
+
+  # pkg install bosh
+    or
+  # portmaster -o shells/bosh
+
+20220918:
+  AFFECTS: users of mail/roundcube
+  AUTHOR: brnrd@FreeBSD.org
+
+  Roundcube has been upgraded to 1.6.0 and introduces breaking changes to
+  configuration options of remote services (imap, smtp, ldap, sieve). Check
+  https://roundcube.net/news/2022/07/28/roundcube-1.6.0-released for details.
+
+  Version 1.6 no longer includes the Classic and Larry skins, which are now
+  available as separate mail/roundcube-classic and mail/roundcube-larry ports.
+
+20220910:
+  AFFECTS: users of devel/cmake
+  AUTHOR: diizzy@FreeBSD.org
+
+  CMake has been converted to a meta-port and new CMake packages created causes
+  conflicts with old binary packages prior to this change.
+
+  If CMake was installed using binary packages via pkg it needs to be
+  uninstalled using pkg delete before installing CMake and related packages
+  after this change.
+
+    pkg delete cmake
+    pkg install cmake-core
+
+  If you're using portmaster you also need to delete the old CMake package
+  before upgrading.
+
+20220909:
+  AFFECTS: users of emulators/qemu
+  AUTHOR: bofh@FreeBSD.org
+
+  emulators/qemu has been updated to 7.1.0. Previous 7.0.X branch has
+  been repocopied to emulators/qemu70. If someone wants to stick with 7.0.X
+  branch please use one of the following command:
+
+  # pkg install qemu70/qemu70-nox11(based on flavor used)
+    or
+  # portmaster -o emulators/qemu70 emulators/qemu
+    or
+  # portupgrade -o emulators/qemu70 emulators/qemu
+
+20220903:
+  AFFECTS: users of editors/vim
+  AUTHOR: adamw@FreeBSD.org
+
+  The Vim port no longer installs a system-wide vimrc. It drastically affected
+  config loading order, and led to various settings being clobbered, duplicated,
+  or ignored.
+
+  Vim's provided defaults.vim (/usr/local/share/vim/vim90/defaults.vim) continues
+  to be read just as before, but its settings are no longer clobbered. Take a look
+  in there for any settings you may want to change, and do ':h initialization' to
+  see where Vim looks for config files.
+
+20220903:
+  AFFECTS: users of archivers/py-borgbackup
+  AUTHOR: mandree@FreeBSD.org
+
+  Borgbackup has been upgraded to version 1.2.  For users who you wish to
+  continue using version 1.1, use either of these commands for upgrading:
+
+  With binary packages through pkg:
+    pkg set -o archivers/py-borgbackup:archivers/py-borgbackup11
+    pkg upgrade
+  With portmaster or portupgrade (replace the command accordingly):
+    portmaster -o archivers/py-borgbackup11 archivers/py-borgbackup
+
+20220901:
+  AFFECTS: users of mail/rainloop-community
+  AUTHOR: yasu@FreeBSD.org
+
+  Since 1.17.0 upstream distributes only one "legacy" edition under MIT license
+  and mail/rainloop-community is removed as a result. So please uninstall
+  mail/rainloop-community (rainloop-community-phpXY) and install mail/rainloop
+  (rainloop-phpXY) instead.
+
+20220831:
+  AFFECTS: users of x11/xscreensaver on 13.1-RELEASE
+  AUTHOR: zirias@FreeBSD.org
+
+  With the update to 6.04, xscreensaver now uses security/unix-selfauth-helper
+  for PAM authentication. This relies on pam_exec.so, which had a bug causing
+  a segfault on authentication attempts prior to 13.1-RELEASE-p1. For details,
+  please see
+  https://www.freebsd.org/security/advisories/FreeBSD-EN-22:19.pam_exec.asc
+
+  Make sure your system is fully upgraded, otherwise you might be unable to
+  unlock your screen.
+
+20220825:
+  AFFECTS: users of net/xrdp or net/xrdp-devel
+  AUTHOR: meta@FreeBSD.org
+
+  After xorg upgrade to 21.1.4, xorgxrdp session doesn't start as before
+  This is because bin/Xorg has been replaced with X server binary wrapper.
+  You must manually edit the Xorg section in etc/xrdp/sesman.ini to get it
+  working again.
+
+  The following is a short example of where, how to modify sesman.ini.
+  Make sure to replace LOCALBASE with your actual path.
+
+   [Xorg]
+   ; Specify the path of non-suid Xorg executable. It might differ depending
+   ; on your distribution and version. Find out the appropreate path for your
+   ; environment. The typical path is known as follows:
+   ;
+   ; Fedora 26 or later    :  param=/usr/libexec/Xorg
+   ; Debian 9 or later     :  param=/usr/lib/xorg/Xorg
+   ; Ubuntu 16.04 or later :  param=/usr/lib/xorg/Xorg
+   ; Arch Linux            :  param=/usr/lib/Xorg
+   ; CentOS 7              :  param=/usr/bin/Xorg or param=Xorg
+   ; CentOS 8              :  param=/usr/libexec/Xorg
+   ;
+  -param=Xorg
+  +param=LOCALBASE/libexec/Xorg
+
+20220815:
+  AFFECTS: users of net/keycloak
+  AUTHOR: fernape@FreeBSD.org
+
+  The flavors -mysql and -postgres were removed, the necessary configuration
+  for those database backends was rolled into the base release by upstream.
+  The configuration files changed completely, so they need to be rebuilt from
+  scratch.
+
+20220807:
+  AFFECTS: users of news/inn
+  AUTHOR: kbowling@FreeBSD.org
+
+  The inn port has been updated to 2.7 release.  Users upgrading from
+  prior versions should read through the announcement for any manual
+  upgrading steps that apply to your environment.
+
+  https://lists.isc.org/pipermail/inn-announce/2022-July/000015.html
+
+20220711:
+  AFFECTS: users of security/stunnel
+  AUTHOR: zi@FreeBSD.org
+
+  The stunnel port has been updated to drop privileges to the stunnel
+  user by default.
+
+  As a result of this change, the pid file location has changed.  If
+  you have a running copy of stunnel, you should stop the process
+  before performing the upgrade.  Alternatively, you will need to
+  # pkill stunnel;service stunnel start
+  after the upgrade has been completed.
+
+202207XYZ:
+  AFFECTS: users of devel/maven-wrapper and devel/maven
+  AUTHOR: michaelo@apache.org
+
+  The environment variable M2_HOME has been replaced with more common
+  MAVEN_HOME which can be used to pass a custom Maven home directory.
+
+20220629:
+  AFFECTS: updating x11-servers/xorg-server from a port
+  AUTHOR: se@FreeBSD.org
+
+  The xorg-server port now has a library dependency on x11/libxcvt,
+  which cannot be installed when the previous version of xorg-server
+  is present.  To be able to update xorg-server from a port, the
+  previous version needs to be manually deinstalled to allow libxcvt
+  to be installed.
+
+20220628:
+  AFFECTS: users of Erlang and Elixir
+  AUTHOR: dch@FreeBSD.org
+
+  For more than a decade, the Elixir Mix tool and the Erlang rebar
+  or erlang.mk build tools have been the de facto way of installing
+  and managing packages for specific applications.
+
+  All main-stream applications, from Riak, CouchDB, RabbitMQ, Phoenix,
+  and Elixir, expect that packages are fetched and compiled into an OTP
+  Release, with in-built version locking, external package management.
+
+  There is no point in maintaining a large number of libraries, that
+  are used neither for development, nor operations.
+
+  Users are directed to https://rebar3.org/ https://erlang.mk/ or
+  https://elixir-lang.org/getting-started/mix-otp/introduction-to-mix.html
+  to fetch custom packages.
+
+  https://www.freebsd.org/status/report-2021-07-2021-09/#_freebsd_erlang_ecosystem_ports_update
+
+20220626:
+  AFFECTS: users of python
+  AUTHOR: thierry@FreeBSD.org
+
+  The default version of python3 and python was switched to 3.9.
+
+  For ports users wanting to keep version 3.8 as default,
+  add DEFAULT_VERSIONS+= python=3.8 python3=3.8 to make.conf
+
+  Following procedures may ease the upgrade:
+
+  For users of pre-build packages:
+  # sh
+  # for i in $(pkg query -g %n 'py38-*'); do pkg set -yn ${i}:py39-${i#py38-}; done
+  # pkg upgrade
+
+  For portmaster users:
+  # sh
+  # portmaster -o lang/python39 python38
+  # REINSTALL="$(pkg info -o "*py38*" | awk '{printf "%s ", $2}')"
+  # pkg delete -f "*py38*"
+  # portmaster $REINSTALL
+  # REBUILD=$(pkg query -g "%n:%dn" '*' | grep py3 | grep -v py39 | cut -d : -f 1 | sort -u)
+  # portmaster $REBUILD
+  # REBUILD2=$(pkg list | grep python-38 | xargs pkg which | awk '{print $6}' | sort -u)
+  # portmaster $REBUILD2
+
+  Final steps (for pre-built packages & portmaster):
+
+  If no longer required, Python 3.8 can be removed via
+  "pkg remove python38" and the directory /usr/local/lib/python3.8 can
+  then be deleted afterwards, if not empty.
+
+20220625:
+  AFFECTS: users of sysutils/fusefs-bindfs
+  AUTHOR: doralitze@chaotikum.org
+
+  Bindfs defaults to use direct I/O since version 1.16. While this results
+  in major performance improvements as well as several bug fixes, this also
+  breaks direct legacy calls to mmap. If your application still uses them
+  consider these two options:
+
+  1. Mount using `--no-direct-io`
+  2. Upgrade your application in order to query mapping guards
+
+20220623:
+  AFFECTS: users of science/gramps
+  AUTHOR: fernape@FreeBSD.org
+
+  databases/py-bsddb3 is deprecated and will be removed in the future. With that
+  gramps will lose the ability to load family trees using Berkeley DB.
+  It is suggested to migrate all family trees using Berkeley DB by exporting
+  them to gramps xml and import that gramps xml into a family tree using sqlite
+  as database.
+
+20220620:
+  AFFECTS: users of www/selenium
+  AUTHOR: fernape@FreeBSD.org
+
+  The port has changed startup args so if you are using selenium_args= in
+  rc.conf you need to add the parameter "standalone" manually.
+
+20220616:
+  AFFECTS: users of net-mgmt/netbox
+  AUTHOR: kai@FreeBSD.org
+
+  /!\ WARNING /!\
+
+  The NetBox 3.2 release contains major changes, so at least items 1.), 2.)
+  and 3.) must be checked before proceeding with the upgrade!
+
+  /!\ WARNING /!\
+
+  1. This release includes a database migration that will remove the "asn",
+     "contact_name", "contact_phone", and "contact_email" fields from the
+     site model.  (These fields have been superseded by the ASN and contact
+     models introduced in NetBox v3.1.)
+
+     To protect against the accidental destruction of data, the upgrade
+     process will fail if any sites still have data in any of these fields.
+
+     To bypass this safeguard, set the NETBOX_DELETE_LEGACY_DATA environment
+     variable when running the upgrade script, which will permit the
+     destruction of legacy data.
+
+     A set of migration scripts is available to assist with the migration of
+     legacy site data:
+
+     https://github.com/netbox-community/migration-scripts
+
+  2. NetBox v3.2 requires Python 3.8 or later.
+
+  3. If the NetBox Plugin "net-mgmt/py-netbox-plugin-extension" is used,
+     please disable it before the migrations are applied.  This can be done
+     by removing the entry "netbox_plugin_extensions" from the "PLUGINS"
+     section in the NetBox configuration.
+
+     Once the upgrade is done, this port/package can be safely removed as
+     it's no longer required.
+
+  4. Please also check the pkg-message and the changelogs for further info.
+
+20220608:
+  AFFECTS: devel/autoconf-wrapper, devel/autoconf213
+  AUTHOR: tijl@FreeBSD.org
+
+  These ports have been renamed to devel/autoconf-switch and devel/autoconf2.13
+  respectively.  If your favourite port updating tool cannot handle that then
+  just remove the packages with "pkg delete" and then install the new port.
+
+20220607:
+  AFFECTS: security/openssh-portable
+  AUTHOR: bdrewery@FreeBSD.org
+
+  OpenSSH has been updated to 9.0p1 with incompatible changes.
+  See https://www.openssh.com/txt/release-9.0 for details.
+
+20220602:
+  AFFECTS: sysutils/graylog
+  AUTHOR: dch@FreeBSD.org
+
+  Graylog 4.3.0+ fails to start if graylog's internal collector for
+  system statistics is enabled. This will eventually be addressed
+  upstream.
+
+  Add disable_native_system_stats_collector=true to your graylog.conf.
+
+20220513:
+  AFFECTS: devel/nexus2-oss
+  AUTHOR: michael.osipov@siemens.com
+
+  Nexus 2.15.x introduces incompatible configuration changes. You
+  must review changes in ETCDIR/wrapper.conf and ETCDIR/jetty*.xml
+  with updated samples as well as NEXUS_WORKDIR/conf/logback-nexus.xml
+  with its origin from
+  DATADIR/nexus/WEB-INF/lib/nexus-core-VERSION.jar!/META-INF/log/logback-nexus.xml,
+  grant write access to files in ETCDIR since Nexus itself might
+  update files in place otherwise your instance will not properly
+  work after the update.
+
+20220510
+  AFFECTS: sysutils/zrepl
+  AUTHOR: monwarez@gmail.com
+
+  The zrepl update to 0.5.0.8 includes the following breaking changes:
+  - The Prometheus metric zrepl_version_daemon was converted to zrepl_start_time
+  The metric still reports the zrepl version in a label.
+  But the metric *value* is now the Unix timestamp at the time the daemon was started.
+  The Grafana dashboard in zrepl examples directory has been updated.
+
+20220502:
+  AFFECTS: mail/mutt
+  AUTHOR: dereks@lifeofadishwasher.com
+
+  Default header cache option has been changed to the new option LMDB using
+  databases/lmdb. The BDB option still exists but now uses databases/db18 due
+  to the EOL of databases/db5.
+
+20220501:
+  AFFECTS: users of drm-current-kmod and drm-devel-kmod
+  AUTHOR: manu@FreeBSD.org
+
+  Both ports where removed.
+  If you were using either one of them directly (i.e. without using
+  graphics/drm-kmod metaport) use graphics/drm-510-kmod.
+  If you have some problems with this one try drm-54-kmod and report
+  a bug on https://github.com/freebsd/drm-kmod.
+
+20220428:
+  AFFECTS: users of databases/redis
+  AUTHOR: yasu@FreeBSD.org
+
+  The databases/redis port has been updated to 7.0. Users wanting to
+  stay on 6.2 can replace databases/redis with databases/redis62 with
+  one of the following commands.
+
+  If you use pkg with binary packages:
+    # pkg set -o databases/redis:databases/redis62
+    # pkg upgrade
+  If you use portmaster:
+    # portmaster -o databases/redis62 databases/redis
+  If you use portupgrade:
+    # portupgrade -o databases/redis62 databases/redis
+
+20220426:
+  AFFECTS: users of deskutils/grantleetheme
+  AUTHOR: kde@FreeBSD.org
+
+  The pkg update of deskutils/grantleetheme to 22.04 can fail due
+  to a filesystem location having changed from being a file to being
+  a directory. This leads to pkg's temporary file creation throwing
+  an error.
+
+  To update to KDE Gear 22.04 please run
+  # pkg delete -f grantleetheme
+  prior to the update.
+
+20220424:
+  AFFECTS: users of emulators/qemu
+  AUTHOR: bofh@FreeBSD.org
+
+  emulators/qemu has been updated to 7.0.0. Previous 6.2.X branch has
+  been repocopied to emulators/qemu6. If someone wants to stick with 6.2.X
+  branch please use one of the following command:
+
+  # pkg install qemu6/qemu6-nox11(based on flavor used)
+    or
+  # portmaster -o emulators/qemu6 emulators/qemu
+    or
+  # portupgrade -o emulators/qemu6 emulators/qemu
+
+20220421:
+  AFFECTS: users of lang/ruby27
+  AUTHOR: yasu@FreeBSD.org
+
+  The default ruby version has been updated from 2.7 to 3.0.
+
+  If you compile your own ports you may keep 2.7 as the default version by
+  adding the following lines to your /etc/make.conf file:
+
+  #
+  # Keep ruby 2.7 as default version
+  #
+  DEFAULT_VERSIONS+=ruby=2.7
+
+  If you wish to update to the new default version, you need to first stop any
+  software that uses ruby. Then, you will need to follow these steps, depending
+  upon how you manage your system.
+
+  If you use pkg, simply upgrade:
+  # pkg upgrade
+
+  If you do not use pkg, please check entry 20190420.
+  The description there should also work for this version.
+
+20220413:
+  AFFECTS: users of net-im/py-matrix-synapse
+  AUTHOR: ports@skyforge.at
+
+  Synapse will now refuse to start up if open registration is enabled,
+  in order to help mitigate abuse across the federation. If you would
+  like to provide registration to anyone, consider adding email,
+  recaptcha or token-based verification in order to prevent automated
+  registration from bad actors. This check can be disabled by setting
+  the enable_registration_without_verification option in your
+  homeserver configuration file to true. More details are available in
+  the upgrade notes[0].
+
+  Synapse will additionally now refuse to start when using PostgreSQL
+  with a non-C values for COLLATE and CTYPE, unless the config flag
+  allow_unsafe_locale, found in the database section of the
+  configuration file, is set to true. See the upgrade notes[1] for
+  details.
+
+  [0] https://matrix-org.github.io/synapse/v1.56/upgrade.html#open-registration-without-verification-is-now-disabled-by-default
+  [1] https://matrix-org.github.io/synapse/v1.56/upgrade#change-in-behaviour-for-postgresql-databases-with-unsafe-locale
+
+20220410:
+  AFFECTS: users of sysutils/screen
+  AUTHOR: cy@FreeBSD.org
+
+  As of sysutils/screen-4.9.0_5, the MULTUSER option is default, reverting
+  to the traditional setuid-root behavior. People who wish to secure their
+  screen install must terminate all screen sessions, then install screen
+  without the MULTIUSER option. The option was reversed because it caused
+  too much astonishment among users of screen.
+
+20220401:
+  AFFECTS: security/sshguard
+  AUTHOR: kevinz5000@gmail.com
+
+  Blacklisting is now disabled by default to avoid overriding the setting in
+  sshguard.conf. To enable blacklisting, uncomment the BLACKLIST_FILE line in
+  sshguard.conf.
+
+20220329:
+  AFFECTS: users of sysutils/screen
+  AUTHOR: cy@FreeBSD.org
+
+  As of sysutils/screen-4.9.0_3, the multiuser feature is not supported
+  by default. The multiuser feature requires setuid root to function.
+  This creates a security risk. Some Linux distributions have had
+  non-setuuid root screen for a dozen or more years. FreeBSD is following
+  suit. A new MULTIUSER option has been added to enable users to install
+  setuid root screen. The MULTIUSER option default is OFF.
+
+  Users who wish to use the multiuser feature may,
+
+  - Build screen using the MULTIUSER option, or
+  - Poudriere users can use poudriere-options to enable the MULTIUSER
+    option, or
+  - Users can chmod the setuid bit for ${LOCALBASE}/bin/screen-4.9.0,
+    making screen setuid root to enable the multiuser feature.
+
+20220326:
+  AFFECTS: users of misc/freebsd-doc-*
+  AUTHOR: blackend@FreeBSD.org
+
+  A change to the doc toolchain prevents the build of individual
+  localized HTML versions of the documentation without building the
+  en_US version.  HTML option is currently disabled until a good
+  solution is found.  PDF version, the default option, is now the only
+  available option.
+
+  Please re-run "make config" to pick up this new default.
+
+20220313:
+  AFFECTS: users of net/unison
+  AUTHOR: madpilot@FreeBSD.org
+
+  unison has been updated to version 2.52. The new version introduces
+  a new wire protocol and on disk archive format. This new version
+  is compatible with 2.51 clients for communication, so it's now
+  possible to upgrade one side and then the other.
+
+  The archive files are automatically converted to the new version,
+  but once they are converted the y are incompatible with the
+  previous version.
+
+  In case you need version 2.51, the previous version of the port
+  is preserved in net/unison251.
+
+20220311:
+  AFFECTS: users of multimedia/get_iplayer
+  AUTHOR: jamie@catflap.org
+
+  get_iplayer has a number of changes to quality settings that may
+  break existing configurations. Please see the release notes for
+  further information:
+
+  https://github.com/get-iplayer/get_iplayer/wiki/release320to329#release329
+
+20220311:
+  AFFECTS: users of emulators/virtualbox-ose
+  AUTHOR: grembo@FreeBSD.org
+
+  In order to comply to hier(7), VirtualBox's configuration of non-default
+  IP ranges to be used in host-only mode moved from /etc/vbox/networks.conf
+  to ${LOCALBASE}/etc/vbox/networks.conf.
+
+20220311:
+  AFFECTS: users of net/nats-server
+  AUTHOR: olgeni@FreeBSD.org
+
+  A dedicated 'nats' user was added, replacing 'nobody' in the startup script.
+  You should check your configuration and assign updated ownership to your data
+  files.
+
+20220227:
+  AFFECTS: users of graphics/bmeps
+  AUTHOR: takefu@airport.fm
+
+  The binary and man page have been renamed from bmpp{.1.gz} to bitmap2pp{.1.gz}
+
+20220225:
+  AFFECTS: users of x11-toolkits/py-wxPython40
+  AUTHOR: lbartoletti@FreeBSD.org
+
+  x11-toolkits/py-wxPython40 has been removed to be replaced by the 4.1
+  version.
+  However the new wxPython ports is now named x11-toolkits/py-wxPython4.
+
+  Depending on the tools you use, you may have to remove the port
+  before ports upgrade.
+
+20220224:
+  AFFECTS: users of net-im/openfire
+  AUTHOR: nikita@druba.su
+
+  The port version have been updated from 4.6.x to 4.7.x.
+  It is recommended to do database and configs backup before updating.
+
+20220219:
+  AFFECTS: users of sysutils/intel-pcm-devel
+  AUTHOR: egypcio@FreeBSD.org
+
+  sysutils/intel-pcm-devel became quite obsolete once sysutils/intel-pcm is
+  now pretty much following a constant and stable update cycle, so users of
+  the -devel version are encouraged to switch to it.
+
+  If you still have sysutils/intel-pcm-devel installed, please delete it from
+  your system and install sysutils/intel-pcm instead:
+
+  # pkg delete sysutils/intel-pcm-devel
+  # pkg install sysutils/intel-pcm
+
+20220219:
+  AFFECTS: users of math/qhull*
+  AUTHOR: stephen@FreeBSD.org
+
+  Because of entries in MOVED, portupgrade can get confused updating qhull.
+  It is recommended that you delete qhull and ports depending upon it, and
+  then reinstalling all the dependent ports.
+
+20220218:
+  AFFECTS: users of TeX*
+  AUTHOR: bofh@FreeBSD.org
+
+  TeX system has been updated to 2021 from 2015. Normal pkg upgrade or
+  portmaster -a should handle all the upgrade properly. In case not please
+  create a ticket or send a mail to tex@FreeBSD.org
+
+  print/tex-aleph has been removed as per upstream. This package should be
+  removed manually. Additionally users have reported to delete
+  texlive-texmf prior to starting update, or pkg-static will indicate
+  there is a conflict during the upgrade of texlive-base :
+
+  # pkg remove tex-aleph texlive-texmf
+
+20220218:
+  AFFECTS: users of net-mgmt/librenms
+  AUTHOR: dvl@FreeBSD.org
+
+  The storage directory has moved from WWWDIR to /var/db/librenms/storage
+  to comply with man 7 hier. When upgrading, you may need to manually create
+  this symlink.
+
+20220212:
+  AFFECTS: users of lang/php8[01][-extensions]?
+  AUTHOR: bofh@FreeBSD.org
+
+  Non-Default OPTION MYSQL80 has been removed in lieu of making
+  php8[01]-openssl as part of DEFAULT php8[01] installation. Although
+  for php74 it is not the case. Ports that depends on
+  security/php8[01]-openssl will no longer be installed as these have
+  been removed. There is no side effect of this for ports which have
+  USE_PHP=openssl. In case for php74 as the default php74-openssl will
+  be installed otherwise it will be used from php installation.
+
+  If you are using pkg, you have to remove php8[01]-openssl manually after
+  the upgrade :
+
+  # pkg info \*php8\* > ~/installed-php-ports-list
+
+  # pkg upgrade -y
+  # pkg delete -f php8[01]-openssl
+  # service -R
+
+  While rebuilding from ports users old php.conf is not overwritten. So
+  have to manually remove the ports. For portmaster users:
+  # sh
+  # REINSTALL="$(pkg info -o "*php80*" | grep -v openssl | awk '{printf "%s ", $2}')"
+  # pkg delete -f "*php80*"
+  # portmaster $REINSTALL
+  # portmaster -a
+
+20220207:
+  AFFECTS: users of security/amavisd-new
+  AUTHOR: flo@FreeBSD.org
+
+  Amavis does now depend on archivers/7-zip (7zz) you might need to update
+  your amavisd.conf and replace all ocurances of p7zip (7zr) accordingly.
+
+20220129:
+  AFFECTS: users of editors/neovim
+  AUTHOR: adamw@FreeBSD.org
+
+  Neovim now uses luajit-openresty as the Lua provider. Many neovim plugins
+  compile some of their code (Packer does this, as do many LSP plugins).
+  Neovim will produce errors and fail to load the plugins.
+
+  Deleting and reinstalling any plugins that produce errors should fix the
+  startup.
+
+  If you use Packer, you also want to delete the startup cache:
+
+  # rm -rf ~/.config/nvim/plugin/packer_compiled.lua
+
+20220128:
+  AFFECTS: users of x11-fonts/source-sans-ttf
+  AUTHOR: fernape@FreeBSD.org
+
+  The font name has changed its prefix from SourceSansPro* to SourceSans*.
+  Users of this font might need to change their configurations to pick up
+  the new names.
+
+20220128:
+  AFFECTS: users of net-im/dendrite
+  AUTHOR: ashish@FreeBSD.org
+
+  The configuration needs to be updated to version 2 following upgrade to
+  Dendrite v0.6. Please refer to /usr/local/etc/dendrite/dendrite.yaml.sample
+  for a sample configuration.
+
+20220127:
+  AFFECTS: users of PyQt
+  AUTHOR: kde@FreeBSD.org
+
+  Most of the PyQt ports have been merged into single port devel/py-qt5-pyqt.
+  `pkg upgrade` will handle update automatically .
+
+20220126:
+  AFFECTS: users of mail/bogofilter, mail/bogofilter-lmdb
+  AUTHOR: mandree@FreeBSD.org
+
+  The default version of mail/bogofilter now uses LMDB instead
+  of Berkeley DB. It is not compatible and cannot read databases.
+
+  Your options are:
+  1. use bogoutil on each wordlist for each of your users first,
+  ONLY THEN reinstall bogofilter, THEN reload the databases with bogoutil,
+  OR
+  2. install the matching bogofilter version and
+  If you had been using bogofilter-lmdb so far, install bogofilter.
+  If you had been using bogofilter so far, install bogofilter-bdb.
+
+20220125:
+  AFFECTS: users of lang/php74
+  AUTHOR: tz@FreeBSD.org
+
+  The default version of PHP has been switched from 7.4 to 8.0.
+
+  If you use binary packages you should make a list of php packages
+  before running 'pkg upgrade':
+
+  # pkg info \*php7\* > ~/installed-php-ports-list
+
+  After the upgrade, check with such list if all your php extensions
+  are still installed, and reinstall them if needed.
+
+  If you use mod_php74 you need to deinstall it and install mod_php80.
+
+20220120:
+  AFFECTS: users of x11-wm/dwm
+  AUTHOR: 0mp@FreeBSD.org
+
+  dwm has been updated to 6.3. The option RUGAPS is no longer available because
+  it depends on a patch only available for version 6.2. RUGAPS can be
+  reintroduced if desired once it is ported to 6.3 by the interested party.
+
+20220118:
+  AFFECTS: users of net-mgmt/netbox
+  AUTHOR: kai@FreeBSD.org
+
+  1. Please make sure that the PostgreSQL server for the NetBox instance is
+     running version 10 or higher.  This is because PostgreSQL 9.6 is
+     End-of-Life since November 2021 and NetBox 3.1 makes use of the
+     "macaddr8" field which was introduced with PostgreSQL 10.
+
+  2. Please also check the pkg-message and the changelogs for further info.
+
+20220110:
+  AFFECTS: users of security/bastillion
+  AUTHOR: netchild@FreeBSD.org
+
+  If you already performed the actions of the next entry, the following
+  action in this entry needs to be performed regardless.
+  If you did not already perform the actions of the next entry, only
+  the action of this entry needs to be performed.
+
+  The datastore of bastillion needs to be upgraded (if you do not see
+  users / can not login, you forgot to upgrade it):
+    java -jar %%PREFIX%%/jetty_bastillion/upgrade/bastillion-upgrade-4.00.01.jar %%PREFIX%%/jetty_bastillion/bastillion/WEB-INF/classes/BastillionConfig.properties
+
+20220104:
+  AFFECTS: users of security/bastillion
+  AUTHOR: netchild@FreeBSD.org
+
+  The datastore of bastillion needs to be upgraded (if you do not see
+  users / can not login, you forgot to upgrade it):
+    java -jar %%PREFIX%%/jetty_bastillion/upgrade/bastillion-upgrade-4.00.00.jar %%PREFIX%%/jetty_bastillion/bastillion/WEB-INF/classes/BastillionConfig.properties
+
+20220102:
+  AFFECTS: users of sysutils/py-azure-cli
+  AUTHOR: dbaio@FreeBSD.org
+
+  When upgrading to Azure CLI v2.31.0, you will need to re-authenticate on
+  Azure services.
+
+    $ az login --use-device-code
+
+  Starting in version 2.30.0, Azure CLI uses MSAL as the underlying
+  authentication library. MSAL uses AAD v2.0 authentication flow to provide more
+  functionality and increases security for token cache.
+  More info: https://docs.microsoft.com/en-us/cli/azure/msal-based-azure-cli
+
+20211220:
+  AFFECTS: users of devel/notcurses
+  AUTHOR: nickblack@linux.com
+
+  Notcurses 3 introduces a new SONAME and significant API/ABI changes.
+  Dependent applications must be recompiled at a minimum. A complete
+  guide to updating for the new API is available under "Porting API2
+  Applications to API3" at
+  https://github.com/dankamongmen/notcurses/releases/tag/v3.0.0
+
+20211220:
+  AFFECTS: users of net-im/openfire
+  AUTHOR: nikita@druba.su
+
+  The port options have been renamed to be more readable.
+  When not using the default options, they have to be regenerated.
+
+  # cd /usr/ports/net-im/openfire
+  # make config
+
+20211213:
+  AFFECTS: users of emulators/qemu-utils
+  AUTHOR: bofh@FreeBSD.org
+
+  New port emulators/qemu@tools has been introduced which is similar to
+  emulators/qemu-utils. qemu-utils has also been DEPRECATED in favor for
+  this as it's MASTER port has also been marked DEPRECATED and set to
+  expire on 2022-01-09. For updating to qemu-tools please use one of
+  the following command:
+
+  # pkg install qemu-tools
+    or
+  # portmaster -o emulators/qemu-utils emulators/qemu@tools
+
+20211116:
+  AFFECTS: users of emulators/qemu50
+  AUTHOR: bofh@FreeBSD.org
+
+  emulators/qemu50 has been moved to emulators/qemu5 and updated to 5.2.0
+  which is the last version from 5.X.X branch. This is done in preparation
+  of updating emulators/qemu into latest 6.X branch. If someone wants to
+  stick with 5.X.X branch please use one of the following command:
+
+  # pkg install qemu5
+    or
+  # portmaster -o emulators/qemu50 emulators/qemu5
+
+  This version also introduces a stripped nox11 version which can be
+  installed with:
+  # pkg install qemu5-nox11
+   or
+  # portmaster emulators/qemu5@nox11
+
+20211115:
+  AFFECTS: AFFECTS: users of *-emacs2x-* packages
+  AUTHOR: jrm@FreeBSD.org
+
+  To avoid problems when editors/emacs or editors/emacs-devel are
+  updated, the emacs major version has been removed from these package
+  names.
+
+  For example, the old and new package names of devel/magit are
+
+  -----------------------------------------------------------
+  | Old Package Name          | New Package Name            |
+  |-------------------------- |-----------------------------|
+  | magit-emacs27             | magit                       |
+  | magit-emacs27_nox         | magit-emacs_nox             |
+  | magit-emacs27_canna       | magit-emacs_canna           |
+  |                           |                             |
+  | magit-emacs29_nox         | magit-emacs_devel_nox       |
+  | magit-emacs29             | magit-emacs_devel           |
+  -----------------------------------------------------------
+
+  To handle these final package name changes, follow a similar procedure
+  as the one described in the 20200811 entry.  That is, simply running
+  `pkg upgrade` will not upgrade, e.g., foo-emacs27_nox to
+  foo-emacs_nox.
+
+  Binary package users:
+
+  To update these packages, run these commands under /bin/sh with superuser
+  privileges before upgrading.
+
+  # default flavor of editors/emacs installed
+  for i in $(pkg query -g %n '*-emacs27'); do
+    if [ "$i" != "notmuch-emacs27" ]; then
+      nn=$(echo "$i" | sed -e 's/-emacs27//')
+    else
+      nn=$(echo "$i" | sed -e 's/-emacs27/-emacs/')
+    fi
+    pkg set -yn "$i":"$nn"
+  done
+
+  # canna or nox flavor of editors/emacs installed
+  for i in $(pkg query -g %n '*-emacs27*'); do
+    nn=$(echo "$i" | sed -e 's/emacs27/emacs/')
+    pkg set -yn "$i":"$nn"
+  done
+
+  # editors/emacs-devel installed
+  for i in $(pkg query -g %n '*-emacs29*'); do
+    nn=$(echo "$i" | sed -e 's/emacs29/emacs_devel/')
+    pkg set -yn "$i":"$nn"
+  done
+
+  portmaster users:
+
+  portmaster -r emacs
+
+20211110:
+  AFFECTS: users of www/node*, www/npm*, www/yarn*
+  AUTHOR: mfechner@FreeBSD.org
+
+  The port framework was updated to use a default version for nodejs.
+  The default version is pointing to the latest LTS version which is
+  currently version 16.
+  You can overwrite this by defining in /etc/make.conf, e.g. version 17:
+  DEFAULT_VERSIONS=nodejs=17
+
+  Or if you would like to stick always to the current version use:
+  DEFAULT_VERSIONS=nodejs=current
+
+  If you would like to use yarn or npm together with nodejs version 17,
+  just install the package that is pulling the wanted dependency to nodejs:
+
+  # pkg install yarn-node17
+  # pkg install npm-node17
+
+20211109:
+  AFFECTS: users of security/libressl
+  AUTHOR: brnrd@FreeBSD.org
+
+  The port has been updated to the latest stable version 3.4 of LibreSSL.
+  The shared library versions of the libraries have been bumped.
+
+  After upgrading, manually update all packages that depend on any of the
+  libraries provided by LibreSSL (libssl, libcrypto and libtls) since the
+  versions of these libraries have changed. Normally, you can obtain the
+  list of dependent software by running the following command:
+
+  # pkg info -r libressl
+
+  Then you should rebuild all ports depending on libressl to avoid dangling
+  shared library dependencies.
+
+20211107:
+  AFFECTS: users of sysutils/devcpu-data
+  AUTHOR: jrm@FreeBSD.org
+
+  The RC variable name microcode_cpus is now deprecated.  Users should
+  instead use the variable microcode_update_cpus.
+
+  Two new ports were branched from sysutils/devcpu-data,
+  sysustils/devcpu-data-amd and sysustils/devcpu-data-intel.  The two
+  new ports contain only the CPU microcode updates for each vendor and
+  sysutils/devcpu-data now only contains an RC script.  Both new ports
+  are on-by-default, optional dependencies of sysutils/devcpu-data.
+
+20211101:
+  AFFECTS: users of textproc/redisearch
+  AUTHOR: osa@FreeBSD.org
+
+  The textproc/redisearch port has been updated to the recent stable
+  release - v2.2.  Users wanting to stay on v2.0 can replace
+  textproc/redisearch with textproc/redisearch20 with one of the
+  following commands:
+
+  # pkg install textproc/redisearch20
+    or
+  # portmaster -o textproc/redisearch20 textproc/redisearch
+    or
+  # portupgrade -o textproc/redisearch20 textproc/redisearch
+
+  NOTE: The textproc/redisearch20 brings a new name for the module,
+  i.e. redisearch20.so, so be careful.
+
+20211024:
+  AFFECTS: sysutils/beats7
+  AUTHOR: otis@FreeBSD.org
+
+  The following breaking changes apply to beats 7.15.0 and newer:
+
+    - All beats:
+    Loading Kibana assets (dashboards, index templates) rely on Saved Object API.
+    So to provide a reliable service, Beats can only import and export dashboards
+    using at least Kibana 7.15.
+
+    - Filebeat:
+      - Remove all alias fields pointing to ECS fields from modules. This affects
+        the Suricata and Traefik modules.
+      - Fix Crowdstrike ingest pipeline that was creating flattened process fields.
+      - Rename log.path to log.file.path in filestream to be consistent with log
+        input and ECS.
+
+    - Heartbeat:
+      - Remove long deprecated watch_poll functionality.
+      - Fix inconsistency in event.dataset values between heartbeat and fleet by
+        always setting this value to the monitor type / fleet dataset.
+
+    - Metricbeat:
+      - Fix Elasticsearch jvm.gc.collectors.old being exposed as young
+
+  Full changelog:
+    https://www.elastic.co/guide/en/beats/libbeat/current/release-notes-7.15.0.html
+    https://www.elastic.co/guide/en/beats/libbeat/current/release-notes-7.15.1.html
+
+20211024:
+  AFFECTS: users of databases/postgresql* and other software using PostgreSQL to run
+  AUTHOR: kbowling@FreeBSD.org
+
+  The default version of PostgreSQL has been switched from 12 to 13.
+  The upgrade procedure can use up twice the space the databases
+  currently needs. If you have a big amount of stored data take a
+  closer look at the manpage of pg_upgrade for avoidance and/or
+  speedup of the upgrade.
+
+  The upgrade instructions consider a basic usage and do not match
+  complex scenarios like replication, sharding, or similar.
+
+  Upgrade instructions:
+
+  First stop your PostgreSQL, create PostgreSQL-binaries and backup your data.
+  If you have another Version of PostgreSQL installed, for example 12.8, your
+  files are named according to this.
+
+  # service postgresql stop
+  # pkg create postgresql12-server postgresql12-contrib
+  # mkdir /tmp/pg-upgrade
+  # tar xf postgresql12-server-12.8.pkg -C /tmp/pg-upgrade
+  # tar xf postgresql12-contrib-12.8.pkg -C /tmp/pg-upgrade
+  # pkg delete -f databases/postgresql12-server databases/postgresql12-contrib databases/postgresql12-client
+
+  Now update PostgreSQL:
+
+    pkg user:
+    # pkg install databases/postgresql13-server databases/postgresql13-contrib
+    # pkg upgrade
+
+    Portmaster users:
+    # portmaster databases/postgresql13-server databases/postgresql13-contrib
+    # portmaster -a
+
+    Portupgrade users:
+    # portinstall databases/postgresql13-server databases/postgresql13-contrib
+    # portupgrade -a
+
+  After installing the new PostgreSQL version you need to convert
+  all your databases to new version:
+
+  # su -l postgres -c "/usr/local/bin/initdb --encoding=utf-8 --lc-collate=C -D /var/db/postgres/data13 -U postgres"
+  # su -l postgres -c "pg_upgrade -b /tmp/pg-upgrade/usr/local/bin/ -d /var/db/postgres/data12/ -B /usr/local/bin/ -D /var/db/postgres/data13/ -U postgres "
+
+  Now the migration is finished. You can start PostgreSQL again with:
+
+  # service postgresql start
+
+  ATTENTION:
+  1) The default user changed from "pgsql" to "postgres" in 11. The migration steps above now assume
+     the "postgres" database user and FreeBSD user.
+  2) See the updating entry 20190829 if you are updating from a release prior to 11.
+  3) If you use non-default initdb options, you have to adjust the initdb-command accordingly
+
+20211023:
+  AFFECTS: users of www/node
+  AUTHOR: bhughes@FreeBSD.org
+
+  The www/node port has been updated to Node.js v17.0.0, the latest
+  upstream release. A new port, www/node16, has been created for the
+  upcoming v16.x LTS branch. Users wanting to stay on v16.x can replace
+  www/node with www/node16 with one of the following commands:
+
+  # pkg install www/node16
+    or
+  # portmaster -o www/node16 www/node
+    or
+  # portupgrade -o www/node16 www/node
+
+20211012:
+  AFFECTS: users of devel/git
+  AUTHOR: garga@FreeBSD.org
+
+  devel/git port was split into multiple sub-ports that depend on devel/git
+  and install additional files:
+
+  - devel/git-cvs - CVS related scripts and man pages
+  - devel/git-gui - GUI related scripts and man pages
+  - devel/git-p4  - Perforce related scripts and man pages
+  - devel/git-svn - Subversion related scripts and man pages
+
+  Due to these changes, CVS, GUI, PERFORCE, and SUBVERSION options
+  as well as gui and svn flavors were removed from the port.
+
+20211010:
+  AFFECTS: users of gtk2 flavored devel/geany*
+  AUTHOR: madpilot@FreeBSD.org
+
+  Upstream dropped support for gtk2. Due to this the ports are now
+  unflavored, installing only with gtk3 support.
+
+  If you are already using the default gtk3 flavor will get the new
+  version with a simple "pkg upgrade".
+
+  To upgrade when using the gtk2 flavors you need to use "pkg install"
+  to install the new unflavored gtk3 packages, pkg will automatically
+  uninstall the old gtk2 flavors.
+
+  If using ports, you will need to uninstall all geany packages and
+  its plugins and reinstall from an updated ports tree.
+
+  The "geany-plugin-multiterm" plugin was only available as a gtk2
+  flavor when installing the gtk2 flavor of geany and has not been
+  ported to gtk3, so has been removed from the tree, so the
+  geany-plugin-multiterm-gtk2 package should be removed from the system.
+
+20211007:
+  AFFECTS: user of security/clamav
+  AUTHOR: yasu@FreeBSD.org
+
+  Upstream changed end-of-life policy and introduced long time support
+  (LTS) feature release.
+
+  * LTS feature release will be identified approximately every two
+    years and supported for at least three years from the initial
+    publication date of that LTS feature version.
+  * Regular (non-LTS) feature releases will be supported for at least
+    four months from the initial publication date of the next feature
+    release or until the feature release after that is published.
+
+  According to it new port security/clamav-lts is added for users who
+  want to use LTS version of ClamAV.
+
+  Users wanting to switch to LTS version can replace security/clamav
+  with security/clamav-lts with one of following commands.
+
+  If you use pkg with binary packages:
+    # pkg set -o security/clamav:security/clamav-lts
+    # pkg upgrade
+  If you use portmaster:
+    # portmaster -o security/clamav-lts security/clamav
+  If you use portupgrade:
+    # portupgrade -o security/clamav-lts security/clamav
+
+20211006:
+  AFFECTS: users of misc/freebsd-doc-*
+  AUTHOR: blackend@FreeBSD.org
+
+The misc/freebsd-doc-* ports have been updated to the new doc toolchain,
+and use a somewhat different arrangement of directories and symlinks,
+which pkg 1.17 does not handle well.
+
+Users are encouraged to delete the misc/freebsd-doc-* ports, then
+reinstall the new ones without using the pkg upgrade facility.
+
+20211006:
+  AFFECTS: users of net/kafkacat
+  AUTHOR: sergey@akhmatov.ru
+
+  kafkacat has been renamed to kcat upstream.
+  So switch to net/kcat instead.
+
+20211004:
+  AFFECTS: users of net-mgmt/netbox
+  AUTHOR: kai@FreeBSD.org
+
+  /!\ WARNING /!\
+
+  The NetBox 3.0 release contains major changes, so at least items 1.), 2.)
+  and 3.) must be checked before proceeding with the upgrade!
+
+  /!\ WARNING /!\
+
+  1. Please ensure that your local installation of net-mgmt/netbox is at
+     the 2.11 release before attempting to upgrade to NetBox 3.0 or later.
+
+  2. Please also note that the previously deprecated secrets functionality
+     has been removed with NetBox 3.0.  This means, all of the secrets still
+     remain in the database once upgraded, only the secrets functionality on
+     the part of NetBox is no longer given.
+
+     In order to continue to be able to access the stored secrets as usual
+     (and then possibly migrate them to another solution, e.g.
+     security/vault), please install the security/py-netbox-secretstore port
+     once NetBox has been upgraded to 3.x and follow its installation
+     instructions how to enable the plugin.
+
+  3. If plugins are used, they should be temporarily deactivated to avoid
+     disruptions during the upgrade process.
+
+  4. Please also check the pkg-message and the changelogs for further info.
+
+20211004:
+  AFFECTS: users of www/py-pyjwt
+  AUTHOR: rhurlin@FreeBSD.org
+
+  To make it possible to easily import py-pyjwt v2.x the current port was
+  moved to a versioned directory.
+
+  If you use portmaster:
+        portmaster -o www/py-pyjwt1 www/py-pyjwt
+  If you use portupgrade:
+        portupgrade -fo www/py-pyjwt1 www/py-pyjwt
+  If you use pkg with binary packages:
+        pkg set -o www/py-pyjwt:www/py-pyjwt1
+
+20210912:
+  AFFECTS: x11-wm/cage, x11-wm/hikari, x11-wm/labwc, x11-wm/sway, x11-wm/wayfire
+  AUTHOR: jbeich@FreeBSD.org
+
+  SUID option has been removed in favor of seatd-launch(1) which doesn't
+  require special handling in every consumer and doesn't bypass group
+  permissions. If you've already enabled seatd service or use consolekit2
+  then nothing changes. Otherwise,
+
+    $ sway
+    00:00:00.001 [ERROR] [wlr] [libseat] [libseat/libseat.c:83] No backend was able to open a seat
+    00:00:00.001 [ERROR] [wlr] [backend/session/session.c:84] Unable to create seat: Function not implemented
+    00:00:00.001 [ERROR] [wlr] [backend/session/session.c:218] Failed to load session backend
+    00:00:00.001 [ERROR] [wlr] [backend/backend.c:353] Failed to start a DRM session
+    00:00:00.001 [ERROR] [sway/server.c:53] Unable to create backend
+
+  can be fixed by
+
+    $ ck-launch-session sway
+
+  or
+
+    $ seatd-launch sway
+
+  or
+
+    # sysrc seatd_enable=YES
+    # service seatd start
+    $ sway
+
+  Replace "sway" with your compositor e.g., "cage", "hikari", "labwc", "wayfire".
+
+20210907:
+  AFFECTS: consumers of math/eigen[23]
+  AUTHOR: adridg@FreeBSD.org
+
+  math/eigen2 has been marked deprecated. There do not seem to be any
+  consumers in FreeBSD ports.
+
+  math/eigen3 has had its options re-vamped. The default options previously
+  pulled in multiple useless library dependencies. The options also forced
+  a specific BLAS implementation. The new options depend only on the
+  default BLAS (whatever USES=blaslapack picks), but this can be turned
+  off. The previous multiple useless libraries -- which are not useless
+  when running the tests in Eigen -- are now hidden behind the default-off
+  TEST option.
+
+  Users of a carefully-tuned Eigen build should re-evaluate the options
+  available.
+
+20210902:
+  AFFECTS: users of editors/vim
+  AUTHOR: adamw@FreeBSD.org
+
+  The vim ports have been completely reworked to take advantage of flavors.
+
+  The biggest change is that the `vim' package is now console-only. If
+  you want the GTk3 GUI, you'll need to install the `vim-gtk3' package
+  instead. All the GUI toolkits have their own package now: vim-gtk3,
+  vim-gtk2, -athena, -motif, and -x11. The vim-tiny package still exists.
+
+  Also: only python3 bindings are included now. There are very few plugins
+  written in Perl or Ruby, so there really wasn't a need to bundle those
+  languages with Vim. They still exist as OPTIONS, so you can still enable
+  them if you'd like. Also, support for py27 has been dropped.
+
+20210901:
+  AFFECTS: users of audio/ampache
+  AUTHOR: crees@FreeBSD.org
+
+  With the upgrade to Ampache 5.0.0, the root Ampache folder has changed
+  to %%WWWDIR%%/ampache/public.  Please update your web server aliases,
+  for example if you use Apache, then in httpd.conf make sure the lines
+  look like this:
+
+  Alias /ampache /usr/local/www/ampache/public
+
+  <Directory "/usr/local/www/ampache/public">
+
+  If you have customised your .htaccess files to allow for a different
+  alias, you'll need to move them to the new location after upgrading:
+
+  # sh -c 'cd /usr/local/www/ampache && for f in */.htaccess; do mv $f public/$f; done'
+
+  More upgrade notes can be found on Github:
+
+  https://github.com/ampache/ampache/releases/tag/5.0.0
+
+20210823:
+  AFFECTS: users of mail/mu
+  AUTHOR: hrs@FreeBSD.org
+
+  mail/mu now uses XDG Base Directory Specification for the default
+  locations for various files.  The mu database now lives under
+  ~/.cache/mu rather than ~/.mu by default.  After upgrading,
+  move the contents under ~/.mu to ~/.cache/mu.
+
+20210823:
+  AFFECTS: users of mail/postfixadmin
+  AUTHOR: ports.maintainer@evilphi.com
+
+  The 3.2->3.3 upgrade requires generating a new setup password hash.
+  The normal post-upgrade visit to setup.php will walk you through the
+  steps.
+
+  For more information, see the "Version 3.3" section of the change log:
+  https://github.com/postfixadmin/postfixadmin/blob/postfixadmin-3.3.9/CHANGELOG.TXT
+
+20210818:
+  AFFECTS: users of databases/redis
+  AUTHOR: osa@FreeBSD.org
+
+  The databases/redis port has been updated to the recent stable release.
+  Users wanting to stay on v6.0 can replace databases/redis with
+  databases/redis6 with one of the following commands:
+
+  # pkg install databases/redis6
+    or
+  # portmaster -o databases/redis6 databases/redis
+    or
+  # portupgrade -o databases/redis6 databases/redis
+
+20210805:
+  AFFECTS: users of sysutils/beats7
+  AUTHOR: otis@FreeBSD.org
+
+  Beats may not be sending data to some distributions of Elasticsearch
+
+  In this release, Elastic is enabling a licensing change that was broadly
+  communicated earlier in 2021. This change would imply that 7.13 instances of
+  Beats would fail to connect to 7.10 or earlier open source distributions of
+  Elasticsearch and Kibana.
+
+  The most visible effect is that sysutils/beats7 users can expect
+  difficulties to send data to Elastic instances hosted in AWS.
+
+  For more information, see:
+  https://www.elastic.co/guide/en/beats/libbeat/current/breaking-changes-7.13.html
+
+20210801:
+  AFFECTS: users of OpenLDAP
+  AUTHOR: delphij@FreeBSD.org
+
+  SASL is now always enabled for OpenLDAP.
+
+  If you use portmaster:
+        portmaster -o net/openldap24-client openldap-sasl-client
+  If you use portupgrade:
+	portupgrade -fo net/openldap24-client openldap-sasl-client
+  If you use pkg with binary packages:
+        pkg set -o net/openldap24-sasl-client:net/openldap24-client
+
+20210730:
+  AFFECTS: users of multimedia/mlt, multimedia/mlt-qt and multimedia/py-mlt
+  AUTHOR:  kde@FreeBSD.org
+
+  multimedia/{py-,}mlt{-qt5,} has been moved to multimedia/{py-,}mlt6{-qt5,}
+  to make room for importin the next major version of the mlt framework.
+
+20210721:
+  AFFECTS: users of x11/rxvt-unicode
+  AUTHOR: thierry@FreeBSD.org
+
+  Since 9.26, there is a regression in resource parsing, which no longer
+  accepts a prefix of the form "URxvt*keysym" ("*." is equivalent to "*").
+
+  Changing "*." to "." should make your bindings work again.
+
+20210704:
+  AFFECTS: users of misc/qtchooser
+  AUTHOR: kde@FreeBSD.org
+
+  QtChooser allows you to select your version of Qt among those installed.
+  However, this tool is no longer supported upstream and will not be
+  available for Qt6.
+
+  By default, our Qt installations are done in:
+  ${LOCALBASE}/lib/qt${QT_VERSION} as recommended.
+  We have added symbolic linking for the main binaries to
+  ${LOCALBASE}/bin with the suffix -qt5.
+
+20210628:
+  AFFECTS: users of misc/openhab
+  AUTHOR: netchild@FreeBSD.org
+
+  You need to run
+    sed -i -e 's:^karaf.framework.equinox=.*:karaf.framework.equinox=mvn\:org.eclipse.platform/org.eclipse.osgi/3.16.200: ; s:^karaf.framework.felix=.*:karaf.framework.felix=mvn\:org.apache.felix/org.apache.felix.framework/6.0.4:' /var/db/openhab/userdata/etc/config.properties
+  to update the version numbers of some components in a config file.
+
+20210621:
+  AFFECTS: users of www/gitlab-ce
+  AUTHOR: mfechner@FreeBSD.org
+
+  The upgrade of Gitlab 14.0.0 is in preparation.
+  You must upgrade first to 13.12.
+  For more information see here:
+  https://about.gitlab.com/blog/2021/06/04/gitlab-moving-to-14-breaking-changes/
+
+  To do the upgrade, make sure you follow the upgrade manuals:
+  https://gitlab.fechner.net/mfechner/Gitlab-docu/-/tree/master/update
+
+  I will merge the 14.0.0 upgrade later to quarterly branch to give you
+  some time for the upgrade to 13.12.
+
+20210620:
+  AFFECTS: users of misc/openhab2
+  AUTHOR: netchild@FreeBSD.org
+
+  The openhab v3 port has been committed. Upstream has removed the
+  version from the name, as such the FreeBSD port follows in all places
+  (start script name, directory names, ...).
+  Users are encouraged to migrate from misc/openhab2 to misc/openhab.
+
+  No automatic config migration is available Both versions can be
+  installed in parallel, but an users has to take care to not run
+  both at the same time on the same port.
+
+20210617:
+  AFFECTS: users of graphics/mesa-libs and x11/nvidia-driver
+  AUTHOR: kbowling@FreeBSD.org
+
+  Some libraries from mesa-libs are now provided by libglvnd while
+  others were renamed. nvidia-driver already used libglvnd but bundled
+  a copy which is now provided as a separate package. When building
+  outside poudriere make sure to remove mesa-libs and nvidia-driver
+  first in order to avoid conflict with libglvnd.
+
+  For portmaster users:
+  # pkg delete -f mesa-libs nvidia-driver
+  # portmaster -a
+
+  For portupgrade users:
+  # pkg delete -f mesa-libs nvidia-driver
+  # portupgrade -a
+
+20210523:
+  AFFECTS: users of www/tt-rss
+  AUTHOR: dereks@lifeofadishwasher.com
+
+  tt-rss config.php syntax has changed.  You can find detailed changes
+  here https://tt-rss.org/wiki/GlobalConfig or look at config.php.sample.
+  Expect your config.php to not work with newer www/tt-rss releases.
+
+  Due to changes in ttrssd before updating you should stop ttrssd or
+  otherwise kill the php process running update_daemon2.php.
+
+20210516:
+  AFFECTS: users of security/bitwarden_rs
+  AUTHOR: mr@FreeBSD.org
+
+  bitwarden_rs has been renamed to vaultwarden upstream.
+  So switch to security/vaultwarden instead.
+
+20210515:
+  AFFECTS: users of databases/postgresql??-server
+  AUTHOR: girgen@FreeBSD.org
+
+  The rc.conf parameter for the login class of the postgresql daemon has
+  changed name from postgresql_class to postgresql_login_class.
+  rc.subr(8) states that the parameter should be named ${name}_login_class.
+
+20210512:
+  AFFECTS: users of sysutils/ansible*
+  AUTHOR: 0mp@FreeBSD.org
+
+  Ansible has been updated to 3.3.0. Please follow the porting guide
+  to update the rulesets:
+
+    https://docs.ansible.com/ansible/devel/porting_guides/porting_guide_3.html
+
+20210508:
+  AFFECTS: users of devel/pycharm-ce
+  AUTHOR: bsam@FreeBSD.org
+
+  Pycharm-ce has switched to the supported java version 11.
+
+20210506:
+  AFFECTS: users of mail/postfix
+  AUTHOR: ohauer@FreeBSD.org
+
+  Postfix 3.6 and higher requires minimum OpenSSL 1.1.1
+  FreeBSD 11 users using base OpenSSL can switch to
+  mail/postfix35
+
+  If you wish to use postfix35 until FreeBSD 11 EoL you might run the
+  following command:
+
+  # pkg set -o mail/postfix:mail/postfix35
+  # pkg upgrade
+
+20210505:
+  AFFECTS: users of sysutils/terraform
+  AUTHOR: 0mp@FreeBSD.org
+
+  Terraform has been updated from 0.13 to 0.15, which introduces several
+  incompatible changes. Please follow upgrading guide when updating
+  the package.
+
+    https://www.terraform.io/upgrade-guides/0-14.html
+    https://www.terraform.io/upgrade-guides/0-15.html
+
+20210426:
+  AFFECTS: users of x11-fonts/iosevka
+  AUTHOR: 0mp@FreeBSD.org
+
+  The selection of options for Iosevka has become less granular as the port has
+  switched from TTF-based distfiles to super-TTC-based distfiles. Now all the
+  spacing variants are contained within one file for each Iosevka style.
+
+20210425:
+  AFFECTS: users of python
+  AUTHOR: kai@FreeBSD.org
+
+  The default version of python3 and python was switched to 3.8.
+
+  For ports users wanting to keep version 3.7 as default,
+  add DEFAULT_VERSIONS+= python=3.7 python3=3.7 to make.conf
+
+  Following procedures may ease the upgrade:
+
+  For users of pre-build packages:
+  # sh
+  # for i in $(pkg query -g %n 'py37-*'); do pkg set -yn ${i}:py38-${i#py37-}; done
+  # pkg upgrade
+
+  For portmaster users:
+  # sh
+  # portmaster -o lang/python38 python37
+  # REINSTALL="$(pkg info -o "*py37*" | awk '{printf "%s ", $2}')"
+  # pkg delete -f "*py37*"
+  # portmaster $REINSTALL
+  # REBUILD=$(pkg query -g "%n:%dn" '*' | grep py3 | grep -v py38 | cut -d : -f 1 | sort -u)
+  # portmaster $REBUILD
+  # REBUILD2=$(pkg list | grep python-37 | xargs pkg which | awk '{print $6}' | sort -u)
+  # portmaster $REBUILD2
+
+20210420:
+  AFFECTS: users of www/node
+  AUTHOR: bhughes@FreeBSD.org
+
+  The www/node port has been updated to Node.js v16.0.0, the latest
+  upstream release. This is a major release, including many significant
+  changes. Users are encouraged to read the release announcements before
+  upgrading:
+
+  https://nodejs.org/en/blog/release/v16.0.0/
+
+20210416:
+  AFFECTS: Users of shells/bash, shells/bash-static with PORTS_READLINE=off
+  AUTHOR: olce.freebsd@certner.fr
+
+  Bundled readline now will use LOCALBASE/etc/inputrc as its ultimate default
+  inputrc file (instead of /etc/inputrc). This puts these ports in line with
+  what devel/readline has been doing recently (since 20210103).
+
+20210414:
+  AFFECTS: users of graphics/OpenEXR or graphics/ilmbase
+  AUTHOR: mandree@FreeBSD.org
+
+  graphics/ilmbase was removed in favor of math/Imath 3.0.1,
+  and graphics/OpenEXR was updated to 3.0.1. Ports that depend on
+  OpenEXR and/or ilmbase according to INDEX were patched,
+  for ports where OpenEXR is an option that defaults to off, these
+  typical items needs to be changed - file bug reports in that case,
+  preferably with tested patches:
+
+  - The IlmBase parts Imath and half are now repackaged as Imath
+  - The IlmThread and Iex libraries are now part of OpenEXR
+  - Some header files were rearranged accordingly, into
+    ${LOCALBASE}/include/OpenEXR vs. ${LOCALBASE}/include/Imath
+  - Some code needs a few #include statements added, often
+    #include <ImfHeader.h> or #include <ImfFrameBuffer.h>
+  - Some classes were removed, and the C++11 standard library
+    features need to be used, f. i. std::numeric_limits.
+  - Some code used Int64 or SInt64 should use uint64_t or int64_t.
+
+  Detailed porting hints are available here:
+  https://github.com/AcademySoftwareFoundation/Imath/blob/v3.0.1/docs/PortingGuide2-3.md
+
+20210411:
+  AFFECTS: users or devel/py-RPyC
+  AUTHOR: skozlov@FreeBSD.org
+
+  devel/py-RPyC has been updated to version 5.0.1, which have some
+  incompatibilities with 4.x branch. Be sure to check them out before
+  upgrading:
+  https://rpyc.readthedocs.io/en/latest/changelog.html#backwards-incompatible
+
+20210414:
+  AFFECTS: users of x11-fonts/oldschool-pc-fonts
+  AUTHOR: evgeniy@khramtsov.org
+
+  x11-fonts/oldschool-pc-fonts has been upgraded to 2.2. This version
+  changed names of many fonts. If you have configuration files with
+  specific font names set, you need to update your configurations
+  after upgrade.
+
+20210406:
+  AFFECTS: users of www/phpvirtualbox
+  AUTHOR: dereks@lifeofadishwasher.com
+
+  www/phpvirtualbox has been updated to version 6.1. This new version
+  only supports version 6.1 of VirtualBox.
+
+  Version 5.x of phpvirtualbox has been preserved as
+  www/phpvirtualbox-legacy. If you require support for VirtualBox
+  5.x please install this version. Remember to copy your configuration
+  file in the new legacy installation.
+
+20210328:
+  AFFECTS: users of www/caddy
+  AUTHOR: adamw@FreeBSD.org
+
+  The default locations for caddy runtime files have changed.
+
+  - Caddy's runtime log is now /var/log/caddy/caddy.log
+    (was /var/log/caddy.log)
+
+  - Automatic SSL certs are now stored in /var/db/caddy/data/caddy
+    (was /root/.local/share/caddy)
+
+  - Configuration autosaves are now stored in /var/db/caddy/config/caddy
+    (was /root/.config/caddy)
+
+  You can change these defaults. See /usr/local/etc/rc.d/caddy for the
+  list of settings.
+
+20210322:
+  AFFECTS: users of net/wireguard
+  AUTHOR: decke@FreeBSD.org
+
+  A wireguard kernel implementation supporting FreeBSD 12.1 and newer was
+  added as net/wireguard-kmod recently.
+
+  The new default for users of net/wireguard is the kernel module.
+
+  If you experience problems with it you can switch back to wireguard-go
+  by removing net/wireguard-kmod and making sure net/wireguard-go is
+  installed.
+  The userland tools wg-quick(8) and wg(8) try to use kernel support if
+  the kernel module is available and otherwise fall back to wireguard-go
+  automatically. Config files are fully compatible.
+
+20210317:
+  AFFECTS: users of security/strongswan
+  AUTHOR: driesm@FreeBSD.org
+
+  The stroke starter interface has been deprecated by upstream
+  for some time now.  The default interface for controlling the charon
+  daemon has switched from stroke to vici. Users still using the
+  legacy config files such as ipsec.conf and ipsec.secret (stroke, starter)
+  can easily revert to the old behavior by:
+
+  # sysrc strongswan_interface="stroke"
+
+  It is recommended to use the vici interface which is configured by swanctl.conf.
+  Check : https://wiki.strongswan.org/projects/strongswan/wiki/Fromipsecconf
+  to ease the transition from ipsec.* to swanctl.conf
+
+20210313:
+  AFFECTS: users of net-mgmt/phpipam
+  AUTHOR: marko.cupac@mimar.rs
+
+  ipaddresses table in phpipam database is likely to contain incorrect datetime
+  values which prevent successful upgrade.  Make sure to create backup of
+  phpipam database.  Before starting upgrade wizard in web interface run the
+  following SQL query on phpipam database:
+
+    UPDATE ipaddresses SET lastSeen='1970-01-01 00:00:01' WHERE lastSeen < '0000-01-01 00:00:00';
+
+20210310:
+  AFFECTS: users of textproc/redisearch
+  AUTHOR: osa@FreeBSD.org
+
+  The textproc/redisearch port has been updated to the recent stable
+  release - v2.0.  Users wanting to stay on v1.6 can replace
+  textproc/redisearch with textproc/redisearch16 with one of the
+  following commands:
+
+  # pkg install textproc/redisearch16
+    or
+  # portmaster -o textproc/redisearch16 textproc/redisearch
+    or
+  # portupgrade -o textproc/redisearch16 textproc/redisearch
+
+  NOTE: The textproc/redisearch16 brings a new name for the module,
+  i.e. redisearch16.so, so be careful.
+
+20210309:
+  AFFECTS: users of emulators/virtualbox-ose
+  AUTHOR: madpilot@FreeBSD.org
+
+  emulators/virtualbox-ose has been updated to 6.1.18. This new
+  version only works on amd64 hardware.
+
+  Previous version 5.x of the virtualbox ports have been preserved
+  as emulators/virtualbox-ose-legacy and similarly named ports for
+  the other parts.
+
+  If you can't run the latest version or wish to stay with the old
+  version, please install the legacy ports.
+
+  Also the additions at present build successfully only for amd64.
+  If you need i386 additions you can fallback to the old legacy
+  ones.
+
+  NOTE: There is no support for moving saved running machine states
+  across major updates of virtualbox. It is recommended to properly
+  shutdown all virtual machines before upgrading. Otherwise the saved
+  state can simply be discarded after the upgrade, if it's not
+  important to preserve it.
+
+  It should also be possible to downgrade to the legacy ports and
+  shutdown the machine properly from the saved state and then upgrade
+  back again.
+
+20210302:
+  AFFECTS: users of editors/emacs-devel
+  AUTHOR: jrm@FreeBSD.org
+
+  If you get the error "Symbol's value as variable is void: minor-modes",
+  rebuild the offending Emacs packages.  See
+  https://lists.gnu.org/archive/html/emacs-devel/2021-02/msg01164.html
+  for details.
+
+20210220:
+  AFFECTS: users of math/py-mathics
+  AUTHOR: thierry@FreeBSD.org
+
+  math/py-mathics has been split into several ports, and Mathics Core
+  only provides a rudimentary command-line shell called mathics.
+  To get the same functionality as in 1.x, you need to install either
+  mathicsscript or Mathics-Django.
+
+20210219:
+  AFFECTS: users of games/mangband
+  AUTHOR: adridg@FreeBSD.org
+
+  The client has updated from 1.1.3 (which has a single public server
+  left) to the current 1.5.3 (which has more public servers). If you
+  update, you can NOT connect to the old server any more. Remember
+  to finish your game before updating.
+
+20210210:
+  AFFECTS: users of audio/spotifyd
+  AUTHOR: rodrigo@FreeBSD.org
+
+  The configuration format for audio/spotifyd is now TOML, make
+  sure to update your configuration file after upgrading the port.
+  Look at the sample configuration file for a working example.
+  https://github.com/Spotifyd/spotifyd/blob/master/docs/src/config/File.md
+
+20210208:
+  AFFECTS: users of mail/mailscanner
+  AUTHOR: crees@FreeBSD.org
+
+  The clamavmodule has finally been removed after a long deprecation
+  period.  Please remove all references to it in your mailscanner.conf as
+  it will now count as a syntax error and may stop MailScanner starting!
+
+20210204:
+  AFFECTS: users of www/unit
+  AUTHOR: osa@FreeBSD.org
+
+  The default location for NGINX Unit's state directory has changed.  It
+  was moved from /usr/local/libexec/unit to /var/db/unit in order to
+  avoid write operations on /usr/local filesystem.
+
+20210130:
+  AFFECTS: users of graphics/opencv-core
+  AUTHOR: tcberner@FreeBSD.org
+
+  graphics/opencv-core has been reintegrated into graphics/opencv.
+  So there is no longer a circular dependency
+     opencv-core -> ffmpeg -> opencv
+
+  If you experience problems updating the packages, try
+      pkg delete -f opencv-core
+
+20210124:
+  AFFECTS: users of net-mgmt/netbox
+  AUTHOR: kai@FreeBSD.org
+
+  The Django templating language (DTL) is no longer supported for export
+  templates.  Please ensure that all export templates use Jinja2 before
+  upgrading.
+
+  Also the support for embedded graphs was completely removed and several
+  changes to the REST API were made.  Please check the changelogs for
+  further details.
+
+20210114:
+  AFFECTS: users of net-im/matterircd
+  AUTHOR: norrland@nullbyte.se
+
+  Commandline switches
+
+  Switched to viper for cmdline parsing, which does not support "short" flags.
+  You'll need to use --flag instead of -flag. Eg ./matterircd --debug
+  Bridge specific configuration is now only in configuration file. This means
+  the following flags have been removed: -restrict,-mmteam,-mmserver,
+  -mminsecure,-mmskiptlsverify.
+  You can set those in matterircd.toml, see the example file.
+
+  Config changes
+
+  BlacklistUser feature for slack has been renamed to DenyUsers.
+  JoinMpImOnTalk feature has been renamed to JoinDM and is available for
+  slack/mattermost
+  JoinInclude, JoinExclude now support regexp (see matterircd.toml.example)
+
+20210113:
+  AFFECTS: users of databases/redis[-devel]
+  AUTHOR: osa@FreeBSD.org
+
+  The databases/redis port has been updated to the recent stable release.
+  Users wanting to stay on v5.x can replace databases/redis with
+  databases/redis5 with one of the following commands:
+
+  # pkg install databases/redis5
+    or
+  # portmaster -o databases/redis5 databases/redis
+    or
+  # portupgrade -o databases/redis5 databases/redis
