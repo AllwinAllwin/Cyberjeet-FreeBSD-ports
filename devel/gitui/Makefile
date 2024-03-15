@@ -1,0 +1,41 @@
+PORTNAME=	gitui
+DISTVERSIONPREFIX=	v
+DISTVERSION=	0.24.3	# After update, `make patch` and `make cargo-crates > Makefile.crates` to avoid fetching vendored openssl-src
+PORTREVISION=	4
+CATEGORIES=	devel
+
+MAINTAINER=	yuri@FreeBSD.org
+COMMENT=	Terminal UI for git
+WWW=		https://github.com/extrawurst/gitui
+
+LICENSE=	MIT
+LICENSE_FILE=	${WRKSRC}/LICENSE.md
+
+BUILD_DEPENDS=	bash:shells/bash \
+		gmake:devel/gmake
+LIB_DEPENDS=	libgit2.so:devel/libgit2 \
+		libssh2.so:security/libssh2
+
+USES=		cargo localbase:ldflags perl5 pkgconfig python:build ssl xorg
+USE_XORG=	xcb
+
+USE_GITHUB=	yes
+GH_ACCOUNT=	extrawurst
+
+RUSTFLAGS+=	--cap-lints=warn
+PLIST_FILES=	bin/${PORTNAME}
+
+BINARY_ALIAS=	python3=${PYTHON_CMD} # xcb requires python3
+
+# Fix build on armv7, i386 and powerpc
+# sys-info-0.9.1 crate issue: https://github.com/FillZpp/sys-info-rs/issues/80
+post-patch:
+	@${REINPLACE_CMD} \
+	-e '/get_cpu/s|unsigned long|uint64_t|' \
+	-e '/get_proc_total/s|unsigned long|uint64_t|' \
+	${WRKSRC}/cargo-crates/sys-info-0.9.1/c/*.[ch]
+
+post-install:
+	${STRIP_CMD} ${STAGEDIR}${PREFIX}/bin/${PORTNAME}
+
+.include <bsd.port.mk>
